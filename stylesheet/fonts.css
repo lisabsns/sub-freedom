@@ -1,0 +1,24 @@
+/* fonts.css — подключение единственной гарнитуры NT Somic.
+   Файлы шрифта лежат в папке ../fonts/ (на уровень выше относительно stylesheet/). */
+
+@font-face {
+  font-family: "NT Somic";
+  src: url("../fonts/NTSomic-Regular.otf") format("opentype");
+  font-weight: 400; /* обычный — основной текст, лид */
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "NT Somic";
+  src: url("../fonts/NTSomic-Medium.otf") format("opentype");
+  font-weight: 500; /* средний — запас, если захочешь выделять мягче, чем Bold */
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "NT Somic";
+  src: url("../fonts/NTSomic-Bold.otf") format("opentype");
+  font-weight: 700; /* жирный — заголовки, крупные числа, капслок-метки */
+  font-style: normal;
+  font-display: swap;
+}
