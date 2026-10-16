@@ -1,13 +1,579 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru" data-lens="promise">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>sub-freedom</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Медитация: свобода по подписке</title>
+
+    <!-- подключён только style.css — он сам импортирует recet, fonts, layout, adaptive -->
     <link rel="stylesheet" href="stylesheet/style.css" />
-    <script defer type="module" src="javascripts/scripts.js"></script>
   </head>
   <body>
-    <h1>ДЫШИИИИИИ</h1>
+    <div class="bar">
+      <span class="site">Медитация · свобода по подписке</span>
+      <button class="toggle" id="lensBtn" aria-label="Переключить оптику">
+        оптика: <span class="pr-on on">обещание</span> /
+        <span class="ar-on off">устройство</span>
+      </button>
+    </div>
+
+    <nav class="index" id="idx" aria-label="Эпохи">
+      <a href="#z0">00 вход</a><a href="#z1">01 · 1950-е</a
+      ><a href="#z2">02 · 1960–70</a><a href="#z3">03 · 1979</a
+      ><a href="#z4">04 · 2007</a><a href="#z5">05 · 2010–20</a
+      ><a href="#z6">06 · 2026</a>
+    </nav>
+
+    <div class="spine" id="spine" aria-hidden="true"></div>
+
+    <!-- HERO -->
+    <section class="capture" id="z0" aria-label="Вход">
+      <div class="stage">
+        <div class="veil" aria-hidden="true"></div>
+        <div class="hstreak" aria-hidden="true">
+          <span class="n" id="hn">0</span
+          ><span class="l">дней подряд · не разорви цепочку</span>
+        </div>
+        <div class="hpromise">
+          <h1 class="breathe">Дыши.<br />Остальное подождёт.</h1>
+          <div class="sub">три минуты, чтобы вернуться к себе</div>
+        </div>
+        <div class="hpush" aria-hidden="true">
+          <div class="ic">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M12 3a6 6 0 0 0-6 6c0 5-2 6-2 6h16s-2-1-2-6a6 6 0 0 0-6-6z"
+              />
+              <path d="M10.5 20a1.8 1.8 0 0 0 3 0" />
+            </svg>
+          </div>
+          <div>
+            <div class="ap">сейчас · приложение для спокойствия</div>
+            <div class="tx">
+              Ты ещё не медитировал сегодня. Серия из 46 дней под угрозой.
+            </div>
+          </div>
+        </div>
+        <div class="hpay" aria-hidden="true">
+          <h3>Продолжи свой путь</h3>
+          <div class="d">Ещё 4 минуты покоя — в Premium.</div>
+          <span class="b">Оформить подписку</span
+          ><span class="pr">€59,99 / год · автопродление</span>
+        </div>
+        <div class="cue">листай ↓</div>
+      </div>
+    </section>
+
+    <!-- TURN -->
+    <section class="turn">
+      <div class="shell">
+        <h2>
+          Приложение, обещавшее свободу от телефона, только что попросило тебя
+          <span class="em">проверить телефон.</span>
+        </h2>
+        <div class="q">
+          Ты пришёл за тишиной — это по-человечески, и этой потребности незачем
+          стыдиться. Дело не в том, что здесь берут деньги: у практики есть
+          преподаватели, материалы, организация, и это стоит труда.
+          <span class="big"
+            >Вопрос тоньше: если ты научишься обходиться без приложения и
+            станешь открывать его реже — для практики это успех. А для
+            сервиса?</span
+          >
+        </div>
+        <div class="f">
+          переключи «оптику» в шапке — и прочитай тот же интерфейс заново
+        </div>
+      </div>
+    </section>
+
+    <!-- РАЗБОР -->
+    <section class="study">
+      <div class="shell">
+        <div class="lead reveal">
+          <span class="chip">разбор · модель</span>
+          <p style="margin-top: 1rem">
+            Ниже — не реальный сервис, а собирательная авторская модель. Смотрим
+            не на цену, а на устройство: <em>что здесь измеряется</em>,
+            <em>какое действие предлагается</em> и
+            <em>что считается продолжением практики</em>.
+          </p>
+        </div>
+        <div class="grid reveal">
+          <div class="svc" aria-label="Макет интерфейса (модель)">
+            <span class="chip model">модель · не реальный сервис</span>
+            <div class="greet">с возвращением</div>
+            <div class="snum" id="svcnum">0</div>
+            <div class="sday">дней подряд</div>
+            <div class="chain" id="svcchain" aria-hidden="true"></div>
+            <button class="cont" type="button">Продолжить путь</button>
+            <div class="left">осталось 4 бесплатные минуты</div>
+          </div>
+          <div class="marks">
+            <div class="m">
+              <div class="k">что измеряется</div>
+              <div class="v">
+                «47» — это непрерывность захода, а не покой. Считают дни, а не
+                то, стало ли тебе легче.
+              </div>
+            </div>
+            <div class="m">
+              <div class="k">какое действие предлагают</div>
+              <div class="v">
+                «Продолжить путь» = открыть сессию снова. Единственное
+                предложенное действие — вернуться.
+              </div>
+            </div>
+            <div class="m">
+              <div class="k">что считается продолжением</div>
+              <div class="v">
+                Продолжением практики назначено возвращение в приложение, а не
+                жизнь вне его.
+              </div>
+            </div>
+            <div class="m">
+              <div class="k">наблюдаемый крючок</div>
+              <div class="v">
+                Цепочка дней + «осталось 4 минуты»: прерывание наказывается
+                стыдом, продолжение — платой.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 01 — текст слева, медиа справа -->
+    <section class="zone" id="z1">
+      <div class="pageno">01</div>
+      <div class="yearbg par" data-speed="0.07" style="right: 2%; top: 30%">
+        1957
+      </div>
+      <div class="shell">
+        <div class="ed">
+          <div class="txt reveal" style="grid-column: 1 / 7">
+            <div class="zhead">
+              <span class="num">01</span
+              ><span class="era">1950-е · после войны</span>
+            </div>
+            <h2 class="zh">Покой без церкви</h2>
+            <p class="lede">
+              Часть послевоенного Запада ищет опору не в церкви. Покой начинает
+              мыслиться как <em>личная задача</em>.
+            </p>
+            <p class="body-note">
+              Судзуки читает дзен в Нью-Йорке, Алан Уоттс переводит его на
+              западный язык («The Way of Zen», 1957), рядом — битники. Это одна
+              из нитей, а не единственная причина: удобнее проследить именно её,
+              чем рисовать прямую линию «кризис веры → приложение».
+            </p>
+            <div class="arch">
+              <div class="h"><span class="hint">↗ сменить оптику</span></div>
+              <div class="i">
+                Рынка ещё нет — продавать нечего. Но если за покой отвечаешь ты
+                сам, его однажды можно будет упаковать и продать. Пока это
+                только возможность.
+              </div>
+            </div>
+          </div>
+          <div class="media" style="grid-column: 8 / 13">
+            <figure class="frame wipe">
+              <div class="ph" style="--ar: 3 / 4">
+                <span>архив · Судзуки / лекция · 1950-е</span>
+              </div>
+              <figcaption class="cap">Д. Т. Судзуки, Нью-Йорк</figcaption>
+            </figure>
+            <figure class="frame wipe">
+              <div class="ph" style="--ar: 4 / 3">
+                <span>архив · битники</span>
+              </div>
+              <figcaption class="cap">Поколение битников, ч/б</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 — медиа слева, текст справа -->
+    <section class="zone" id="z2">
+      <div class="pageno">02</div>
+      <div class="yearbg par" data-speed="0.07" style="left: 1%; top: 22%">
+        1968
+      </div>
+      <div class="shell">
+        <div class="ed">
+          <div class="txt reveal" style="grid-column: 7 / 13; order: 2">
+            <div class="zhead">
+              <span class="num">02</span
+              ><span class="era">1960–70-е · первая волна</span>
+            </div>
+            <h2 class="zh">Измени сознание</h2>
+            <p class="lede">
+              Махариши и Трансцендентальная медитация; Битлз едут в Ришикеш.
+              Практика входит в поп-культуру Запада.
+            </p>
+            <p class="body-note">
+              Восток становится модой: мантра, ашрам, гуру попадают на обложки.
+            </p>
+            <div class="arch">
+              <div class="h"><span class="hint">↗ сменить оптику</span></div>
+              <div class="i">
+                Наблюдаемый механизм: TM берёт фиксированную плату за
+                персональную мантру. Это ещё не подписка — но уже деньги за вход
+                в практику. Первое семя монетизации покоя, которое можно
+                показать пальцем.
+              </div>
+            </div>
+          </div>
+          <div class="media" style="grid-column: 1 / 7; order: 1">
+            <figure class="frame wipe">
+              <div class="ph" style="--ar: 3 / 2">
+                <span>архив · Битлз в Ришикеше · 1968</span>
+              </div>
+              <figcaption class="cap">Ришикеш, 1968</figcaption>
+            </figure>
+            <figure class="frame wipe">
+              <div class="ph" style="--ar: 1 / 1">
+                <span>архив · Махариши</span>
+              </div>
+              <figcaption class="cap">Махариши Махеш Йоги</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 — текст слева, медиа справа (два кадра) -->
+    <section class="zone" id="z3">
+      <div class="pageno">03</div>
+      <div class="yearbg par" data-speed="0.08" style="right: 3%; bottom: 8%">
+        1979
+      </div>
+      <div class="shell">
+        <div class="ed">
+          <div class="txt reveal" style="grid-column: 1 / 7">
+            <div class="zhead">
+              <span class="num">03</span><span class="era">1979 · шарнир</span>
+            </div>
+            <h2 class="zh">Клинически доказано</h2>
+            <p class="lede">
+              Джон Кабат-Зинн создаёт MBSR в UMass: восемь недель, протокол,
+              измеримый стресс. Из религии — <em>в клинику</em>.
+            </p>
+            <p class="body-note">
+              Вот переход, который прослеживается шаг за шагом: практику
+              отделяют от религии, переводят в протокол и начинают измерять. Это
+              тот один сдвиг, на котором держится вся дальнейшая история.
+            </p>
+            <div class="arch">
+              <div class="h"><span class="hint">↗ сменить оптику</span></div>
+              <div class="i">
+                Что измеримо и протоколируемо — то масштабируемо, а значит
+                продаваемо. Религию нельзя оформить по подписке; восьминедельную
+                программу — можно. Практика впервые становится продуктом, и это
+                наблюдаемо, а не метафора.
+              </div>
+            </div>
+          </div>
+          <div class="media" style="grid-column: 8 / 13">
+            <figure class="frame wipe">
+              <div class="ph" style="--ar: 4 / 5">
+                <span>архив · клиника / группа MBSR · ~1979</span>
+              </div>
+              <figcaption class="cap">MBSR, UMass</figcaption>
+            </figure>
+            <figure class="frame wipe">
+              <div class="ph" style="--ar: 3 / 2">
+                <span>схема · «8 недель»</span>
+              </div>
+              <figcaption class="cap">Протокол программы</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 — текст широкий по центру + split -->
+    <section class="zone" id="z4">
+      <div class="pageno">04</div>
+      <div class="yearbg par" data-speed="0.06" style="left: 2%; bottom: 6%">
+        2007
+      </div>
+      <div class="shell">
+        <div class="ed">
+          <div class="txt reveal" style="grid-column: 2 / 11; max-width: 46rem">
+            <div class="zhead">
+              <span class="num">04</span
+              ><span class="era">2007 · корпорация</span>
+            </div>
+            <h2 class="zh">Расслоение обещания</h2>
+            <p class="lede">
+              Google запускает «Search Inside Yourself». Майндфулнес входит в
+              корпорацию — и обещание раскалывается по адресату.
+            </p>
+            <div class="split reveal">
+              <div class="a">
+                <div class="w">кому — звезде / менеджеру</div>
+                <h4>Раскрой потенциал</h4>
+                <p>Рост, трансформация, лучшая версия себя.</p>
+              </div>
+              <div class="b">
+                <div class="w">кому — рядовому работнику</div>
+                <h4>Будь устойчивее</h4>
+                <p>
+                  Resilience, фокус, меньше абсентеизма. Меняется не условие —
+                  реакция.
+                </p>
+              </div>
+            </div>
+            <div class="arch">
+              <div class="h"><span class="hint">↗ сменить оптику</span></div>
+              <div class="i">
+                <b>Рекуперация.</b> Практика, которая могла бы поставить под
+                вопрос твой образ жизни, переупакована в средство лучше его
+                выдерживать. Ты хотел перестать без конца измерять свою
+                эффективность — а получаешь ещё одну серию дней, которую нельзя
+                прервать, ещё одну задачу самосовершенствования.
+              </div>
+              <div class="cite">
+                <b>Хан, «Общество усталости»:</b> субъект достижения
+                эксплуатирует сам себя — и называет это ростом.
+              </div>
+            </div>
+          </div>
+          <div class="media" style="grid-column: 1 / 13; margin-top: 1.4rem">
+            <figure class="frame wipe">
+              <div class="ph" style="--ar: 16 / 6">
+                <span>архив · корпоративная сессия майндфулнеса</span>
+              </div>
+              <figcaption class="cap">
+                Open space, тренинг осознанности
+              </figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 — медиа слева, текст справа -->
+    <section class="zone" id="z5">
+      <div class="pageno">05</div>
+      <div class="yearbg par" data-speed="0.07" style="left: 1%; top: 26%">
+        2014
+      </div>
+      <div class="shell">
+        <div class="ed">
+          <div class="txt reveal" style="grid-column: 6 / 13; order: 2">
+            <div class="zhead">
+              <span class="num">05</span
+              ><span class="era">2010–2020 · подписка</span>
+            </div>
+            <h2 class="zh">Счастье за 10 минут в день</h2>
+            <p class="lede">
+              Headspace (2010) и Calm (2012). Обложка Time «The Mindful
+              Revolution» (2014). Пандемия 2020 — загрузки взлетают.
+            </p>
+            <div class="mech reveal">
+              <div class="r">
+                <svg viewBox="0 0 24 24">
+                  <path d="M9 12a3 3 0 0 1 3-3 3 3 0 0 1 0 6" />
+                  <path d="M15 12a3 3 0 0 1-3 3 3 3 0 0 1 0-6" />
+                </svg>
+                <div class="nm">стрик</div>
+                <div class="fn">цепочка дней, которую стыдно разорвать</div>
+              </div>
+              <div class="r">
+                <svg viewBox="0 0 24 24">
+                  <path
+                    d="M12 3a6 6 0 0 0-6 6c0 5-2 6-2 6h16s-2-1-2-6a6 6 0 0 0-6-6z"
+                  />
+                  <path d="M10.5 20a1.8 1.8 0 0 0 3 0" />
+                </svg>
+                <div class="nm">пуш</div>
+                <div class="fn">напоминание, возвращающее тебя внутрь</div>
+              </div>
+              <div class="r">
+                <svg viewBox="0 0 24 24"><path d="M8 5l11 7-11 7z" /></svg>
+                <div class="nm">автоплей</div>
+                <div class="fn">следующая сессия начинается сама</div>
+              </div>
+              <div class="r">
+                <svg viewBox="0 0 24 24">
+                  <rect x="3" y="6" width="18" height="12" rx="2" />
+                  <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+                <div class="nm">подписка</div>
+                <div class="fn">
+                  автопродление, которому невыгодно тебя отпускать
+                </div>
+              </div>
+            </div>
+            <p class="body-note" style="max-width: 34rem">
+              <b>Платность — не состав преступления.</b> Проблема начинается
+              там, где твоё возвращение превращается в самостоятельное
+              требование и вступает в спор с тем самым освобождением внимания,
+              которое тебе обещали.
+            </p>
+            <div class="arch">
+              <div class="h"><span class="hint">↗ сменить оптику</span></div>
+              <div class="i">
+                Наблюдаемо: 2019 — Calm оценивают примерно в $1 млрд; выходит
+                «McMindfulness» Пёрсера. «Витамин, а не аспирин» — ежедневность
+                как бизнес-модель.
+              </div>
+              <div class="cite">
+                <b>Хан, «Инфократия»:</b> режим правит через свободу и
+                прозрачность — ты сам отдаёшь данные о своём покое и сам себя
+                оптимизируешь.
+              </div>
+            </div>
+          </div>
+          <div class="media" style="grid-column: 1 / 6; order: 1">
+            <figure class="frame wipe">
+              <div class="ph" style="--ar: 9 / 16">
+                <span>улика · экран приложения (с атрибуцией)</span>
+              </div>
+              <figcaption class="cap">Интерфейс подписки, ч/б</figcaption>
+            </figure>
+            <figure class="frame wipe">
+              <div class="ph" style="--ar: 3 / 4">
+                <span>архив · обложка Time · 2014</span>
+              </div>
+              <figcaption class="cap">«The Mindful Revolution»</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 — текст слева, медиа справа -->
+    <section class="zone" id="z6">
+      <div class="pageno">06</div>
+      <div class="yearbg par" data-speed="0.08" style="right: 2%; top: 16%">
+        2026
+      </div>
+      <div class="shell">
+        <div class="ed">
+          <div class="txt reveal" style="grid-column: 1 / 8">
+            <div class="zhead">
+              <span class="num">06</span><span class="era">2026 · сейчас</span>
+            </div>
+            <h2 class="zh">Твой путь продолжается</h2>
+            <p class="lede">
+              Главная метрика индустрии покоя — <em>удержание</em>.
+            </p>
+            <div class="bignum">$2 000 000 000</div>
+            <div class="bigsub">
+              объём рынка · у Headspace ≈ 2,8 млн платных подписчиков и ≈ 105
+              млн загрузок
+            </div>
+            <div class="arch">
+              <div class="h"><span class="hint">↗ сменить оптику</span></div>
+              <div class="i">
+                Вот где платность становится ловушкой: подписка структурно не
+                может тебя выпустить. Тот, кому ты больше не нужен как
+                пользователь, — это отток. Вина за пропущенный день —
+                добавленный долг, а не снятый.
+              </div>
+              <div class="cite">
+                <b>Хан, «Топология насилия»:</b> давление идёт изнутри — тебя
+                никто не заставляет, ты сам не хочешь разорвать цепочку.
+              </div>
+            </div>
+            <div class="exit reveal">
+              <div class="lab">выход · различение</div>
+              <p style="margin-top: 0.9rem" class="body-note">
+                Доверия заслуживает то, что собрано сделать себя ненужным — и
+                это тоже наблюдаемый признак, а не лозунг: Waking Up отдаёт
+                доступ тем, кто не может платить; Plum Village бесплатно, вне
+                логики выручки.
+              </p>
+              <p class="body-note" style="margin-top: 1rem">
+                Вопрос не в цене, а в том, кому выгодно твоё возвращение — тебе
+                или метрике. Умеет ли сервис отпустить того, кому больше не
+                нужен?
+              </p>
+              <p class="crit">Тест любой практики — даёт ли она тебе уйти.</p>
+            </div>
+          </div>
+          <div class="media" style="grid-column: 9 / 13">
+            <figure class="frame wipe">
+              <div class="ph" style="--ar: 3 / 5">
+                <span>фото · дерево / тишина вне экрана</span>
+              </div>
+              <figcaption class="cap">Жизнь вне приложения</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COLOPHON -->
+    <section class="colo">
+      <div class="shell">
+        <h2>Колофон</h2>
+        <div class="sg">
+          <div>
+            <h3>Шрифт — единственный</h3>
+            <div class="f1">NT Somic</div>
+            <div class="cr" style="margin-top: 0.5rem">
+              обе оптики — одной гарнитурой: вес, капслок и разрядка вместо
+              второго шрифта
+            </div>
+          </div>
+          <div>
+            <h3>Приём</h3>
+            <div class="f1">Инверсия</div>
+            <div class="cr" style="margin-top: 0.5rem">
+              «устройство» — фотонегатив «обещания»: тот же экран, прочитанный
+              заново
+            </div>
+          </div>
+          <div>
+            <h3>Цвет — обещание</h3>
+            <div class="sw">
+              <b style="background: #ffffff"></b> #FFFFFF · фон
+            </div>
+            <div class="sw">
+              <b style="background: #0c0c0c"></b> #0C0C0C · текст
+            </div>
+            <div class="sw">
+              <b style="background: #6c6c69"></b> #6C6C69 · вторичный
+            </div>
+          </div>
+          <div>
+            <h3>Цвет — устройство</h3>
+            <div class="sw">
+              <b style="background: #0a0a0a"></b> #0A0A0A · фон
+            </div>
+            <div class="sw">
+              <b style="background: #f4f4f1"></b> #F4F4F1 · текст
+            </div>
+            <div class="sw">
+              <b style="background: #a6a6a2"></b> #A6A6A2 · вторичный
+            </div>
+          </div>
+        </div>
+        <div class="cr">
+          <b>Оптика анализа:</b> Бён-Чхоль Хан — «Общество усталости»,
+          «Топология насилия», «Инфократия» · Рональд Пёрсер — «McMindfulness» ·
+          рамка рекуперации.<br />
+          <b>История практики:</b> собрана из отдельных эпизодов (Уоттс,
+          Судзуки; TM; Кабат-Зинн / MBSR; корпоративный майндфулнес), а не из
+          единой причинной цепи.<br />
+          <b>Реальные данные:</b> Calm ≈ $1 млрд (2019), объём рынка, показатели
+          Headspace — по открытым источникам, отдельно от авторской модели.<br />
+          <b>Вымышленный сервис:</b> собирательная модель; реальные приложения
+          разбираются по конкретным примерам.<br />
+          <b>Текст и дизайн:</b> © автор. Сделано с ИИ-ассистентом; решения —
+          авторские.
+        </div>
+      </div>
+    </section>
+
+    <script src="javascripts/scripts.js"></script>
   </body>
 </html>
