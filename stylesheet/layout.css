@@ -1,0 +1,936 @@
+/* Весь CSS проекта: токены, компоненты, журнальная сетка и hero.
+   Подключается из style.css. Медиазапросы — отдельно в adaptive.css. */
+
+/* style.css — дизайн-токены, типографика и ВНЕШНИЙ ВИД компонентов.
+   (Скелет сетки и hero — в layout.css; медиазапросы — в adaptive.css.) */
+
+/* ======================= ТОКЕНЫ ======================= */
+:root {
+  --font: "NT Somic", system-ui, -apple-system, sans-serif;
+
+  /* 4 уровня типографики */
+  --t-display: clamp(
+    2.6rem,
+    6.6vw,
+    5.2rem
+  ); /* заголовки + крупные числа — вес 700 */
+  --t-sub: clamp(
+    1.28rem,
+    2.3vw,
+    1.7rem
+  ); /* лид / выделенные утверждения — 400 */
+  --t-body: 1.12rem; /* основной текст — 400 */
+  --t-label: 0.68rem; /* капслок-метки — 700 */
+
+  /* ЧБ — регистр ОБЕЩАНИЕ (светлый) */
+  --bg: #ffffff;
+  --fg: #0c0c0c;
+  --fg2: #6c6c69;
+  --fg3: #a0a09c;
+  --line: #e4e4e1;
+  --line2: #c9c9c5;
+  --chip-bg: #0c0c0c;
+  --chip-fg: #ffffff;
+  --slot: #d9d9d4;
+  --slot-fg: #595953; /* серый квадрат-слот под фото */
+
+  --measure: 34rem; /* комфортная длина строки */
+
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+/* регистр УСТРОЙСТВО — настоящая инверсия (переключается тумблером) */
+html[data-lens="architecture"] {
+  --bg: #0a0a0a;
+  --fg: #f4f4f1;
+  --fg2: #a6a6a2;
+  --fg3: #54544f;
+  --line: #242424;
+  --line2: #3a3a3a;
+  --chip-bg: #f4f4f1;
+  --chip-fg: #0a0a0a;
+  --slot: #202020;
+  --slot-fg: #8c8c87;
+}
+
+/* ======================= БАЗА ======================= */
+body {
+  font-family: var(--font);
+  font-weight: 400;
+  font-size: var(--t-body);
+  line-height: 1.7;
+  background: var(--bg);
+  color: var(--fg);
+  transition:
+    background 0.8s ease,
+    color 0.8s ease;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip; /* убирает боковые белые поля от переполнения; не ломает sticky */
+}
+p {
+  margin: 0 0 1.1em;
+  max-width: var(--measure);
+  text-wrap: pretty;
+}
+b,
+strong {
+  font-weight: 700;
+  letter-spacing: 0;
+}
+em,
+.em {
+  font-style: normal;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+/* L1 — display: жирный, плотный, но без слипания букв */
+.zh,
+.hpromise h1,
+.turn h2,
+.colo h2,
+.bignum,
+.svc .snum,
+.hstreak .n,
+.yearbg,
+.pageno {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.zh,
+.hpromise h1,
+.turn h2,
+.lede {
+  text-wrap: balance;
+}
+
+/* L4 — метка (капслок, разрядка) */
+.label,
+.chip,
+.ulbl,
+.zhead .num,
+.zhead .era,
+.bar,
+.index a,
+.cap,
+.hstreak .l,
+.hpush .ap,
+.hpay .b,
+.hpay .pr,
+.cue,
+.turn .f,
+.svc .greet,
+.svc .sday,
+.svc .cont,
+.marks .k,
+.split .w,
+.mech .nm,
+.exit .lab,
+.sg h3,
+.sw {
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: var(--t-label);
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  line-height: 1.35;
+}
+.chip {
+  display: inline-block;
+  background: var(--chip-bg);
+  color: var(--chip-fg);
+  padding: 0.32rem 0.5rem;
+  border-radius: 2px;
+}
+
+/* ======================= ШАПКА ======================= */
+.bar {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: calc(0.85rem + env(safe-area-inset-top, 0px))
+    clamp(1.1rem, 3vw, 2rem) 0.85rem;
+  background: transparent;
+}
+.bar .site {
+  opacity: 0.65;
+}
+.toggle {
+  border: 1px solid var(--fg);
+  background: transparent;
+  color: var(--fg);
+  border-radius: 2px;
+  padding: 0.5rem 0.8rem;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: var(--t-label);
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+.toggle .on {
+  opacity: 1;
+}
+.toggle .off {
+  opacity: 0.35;
+}
+
+/* ======================= ИНДЕКС ЭПОХ (слева) ======================= */
+.index {
+  position: fixed;
+  left: clamp(1rem, 2.2vw, 1.6rem);
+  top: 0;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.4rem;
+  pointer-events: none;
+}
+.index a {
+  pointer-events: auto;
+  text-decoration: none;
+  color: var(--fg2);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  opacity: 0.5;
+  transition:
+    opacity 0.3s,
+    color 0.3s;
+}
+.index a::before {
+  content: "";
+  width: 12px;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.3s;
+}
+.index a.on {
+  opacity: 1;
+  color: var(--fg);
+}
+.index a.on::before {
+  width: 26px;
+}
+
+/* ======================= СПАЙН (правый край) ======================= */
+.spine {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  z-index: 4;
+  background: var(--line2);
+  opacity: 0.9;
+  pointer-events: none;
+}
+.spine::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2px;
+  height: var(--prog, 0%);
+  background: var(--fg);
+}
+
+/* ======================= ЗАГОЛОВКИ ЗОН ======================= */
+.zhead {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 1.4rem;
+}
+.zhead .num {
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+.zhead .era {
+  color: var(--fg2);
+}
+.zh {
+  font-size: var(--t-display);
+  line-height: 0.98;
+  margin: 0 0 1rem;
+}
+.lede {
+  font-weight: 400;
+  font-size: var(--t-sub);
+  line-height: 1.4;
+  letter-spacing: -0.015em;
+  max-width: 30rem;
+  margin: 0 0 1.3rem;
+}
+.body-note {
+  color: var(--fg2);
+}
+
+/* ======================= ДЕКОР: год на фоне + номер-страница ======================= */
+.yearbg {
+  position: absolute;
+  z-index: 0;
+  font-size: clamp(6rem, 20vw, 18rem);
+  line-height: 0.8;
+  color: var(--fg);
+  opacity: 0.05;
+  pointer-events: none;
+  letter-spacing: -0.04em;
+}
+.pageno {
+  position: absolute;
+  top: clamp(3rem, 6vh, 5rem);
+  right: clamp(1.2rem, 4vw, 2.6rem);
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  color: var(--fg3);
+  z-index: 1;
+}
+
+/* ======================= СЛОТЫ ПОД ФОТО ======================= */
+/* серый квадрат с подписью. Чтобы вставить фото — положи <img> внутрь .ph */
+.frame {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line2);
+  clip-path: inset(0 0 0 0);
+}
+.frame.wipe {
+  clip-path: inset(0 0 101% 0);
+  transition: clip-path 1.05s cubic-bezier(0.2, 0.75, 0.2, 1);
+}
+.frame.wipe.in {
+  clip-path: inset(0 0 0 0);
+}
+.frame .ph {
+  position: relative;
+  aspect-ratio: var(--ar, 3 / 2);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 1.3rem;
+  background: var(--slot);
+}
+.frame .ph::before {
+  content: "ФОТО";
+  position: absolute;
+  top: 0.6rem;
+  left: 0.7rem;
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  color: var(--slot-fg);
+  opacity: 0.75;
+}
+.frame .ph span {
+  font-family: var(--font);
+  font-weight: 600;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  color: var(--slot-fg);
+  max-width: 17rem;
+}
+.frame .ph img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.cap {
+  color: var(--fg2);
+  margin-top: 0.6rem;
+  display: block;
+}
+
+/* ======================= АННОТАЦИЯ «УСТРОЙСТВО» ======================= */
+.arch {
+  margin-top: 1.8rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1.1rem;
+  max-width: var(--measure);
+  max-height: 2.1rem;
+  overflow: hidden;
+  opacity: 0.4;
+  transition:
+    max-height 0.7s ease,
+    opacity 0.7s ease;
+}
+.arch .h {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.arch .hint {
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: var(--t-label);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg2);
+}
+html[data-lens="architecture"] .arch .h {
+  display: none;
+}
+.arch .i {
+  font-weight: 400;
+  font-size: var(--t-body);
+  line-height: 1.6;
+  margin-top: 0.9rem;
+  color: var(--fg);
+}
+.arch .cite {
+  margin-top: 1rem;
+  font-weight: 400;
+  font-size: var(--t-sub);
+  line-height: 1.35;
+  color: var(--fg);
+  border-left: 2px solid var(--fg);
+  padding-left: 0.9rem;
+}
+
+/* появление блоков при скролле */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.9s ease,
+    transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ======================= ПОВОРОТНАЯ ПЛАШКА + ВОПРОС ======================= */
+.turn {
+  background: var(--bg);
+  color: var(--fg);
+  padding: clamp(4rem, 10vh, 7rem) 0;
+  border-top: 1px solid var(--line);
+  position: relative;
+  overflow: hidden;
+}
+html[data-lens="promise"] .turn {
+  background: #0a0a0a;
+  color: #f4f4f1;
+  border: none;
+}
+.turn .shell {
+  max-width: 46rem;
+  position: relative;
+  z-index: 1;
+}
+.turn h2 {
+  font-size: var(--t-display);
+  line-height: 1.04;
+  margin: 0;
+  max-width: 34rem;
+}
+.turn .q {
+  margin-top: 2.2rem;
+  max-width: 34rem;
+  font-weight: 400;
+  font-size: var(--t-body);
+  line-height: 1.6;
+}
+html[data-lens="promise"] .turn .q {
+  color: #cfcfcc;
+}
+.turn .q .big {
+  display: block;
+  font-weight: 400;
+  font-size: var(--t-sub);
+  line-height: 1.3;
+  margin-top: 0.7rem;
+  color: #fff;
+}
+html[data-lens="architecture"] .turn .q .big {
+  color: var(--fg);
+}
+.turn .f {
+  color: #7d7d7a;
+  margin-top: 1.8rem;
+}
+html[data-lens="architecture"] .turn .f {
+  color: var(--fg2);
+}
+
+/* ======================= РАЗБОР ИНТЕРФЕЙСА (модель) ======================= */
+.study {
+  padding: clamp(4.5rem, 10vh, 8rem) 0;
+  position: relative;
+}
+.study .lead {
+  max-width: 34rem;
+  margin-bottom: 2.2rem;
+}
+.study .lead p {
+  font-weight: 400;
+  font-size: var(--t-body);
+  line-height: 1.55;
+}
+.study .grid {
+  display: grid;
+  grid-template-columns: minmax(0, 22rem) 1fr;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: start;
+  max-width: 52rem;
+}
+.svc {
+  border: 1px solid var(--line2);
+  border-radius: 18px;
+  padding: 1.4rem;
+  position: relative;
+}
+.svc .model {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+}
+.svc .greet {
+  color: var(--fg2);
+}
+.svc .snum {
+  font-size: var(--t-display);
+  line-height: 1;
+  margin: 0.4rem 0 0.1rem;
+  font-variant-numeric: tabular-nums;
+}
+.svc .sday {
+  color: var(--fg2);
+}
+.svc .chain {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 1.1rem 0;
+}
+.svc .chain i {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  background: var(--fg);
+  opacity: 0.72;
+}
+.svc .chain i.brk {
+  background: transparent;
+  border: 1.5px solid var(--fg);
+  opacity: 1;
+}
+.svc .cont {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background: var(--fg);
+  color: var(--bg);
+  border: none;
+  border-radius: 999px;
+  padding: 0.8rem;
+  margin-top: 0.4rem;
+  cursor: pointer;
+}
+.svc .left {
+  font-weight: 400;
+  font-size: var(--t-body);
+  color: var(--fg2);
+  text-align: center;
+  margin-top: 0.7rem;
+}
+.marks {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  opacity: 0.25;
+  transition: opacity 0.7s;
+}
+html[data-lens="architecture"] .marks {
+  opacity: 1;
+}
+.marks .m {
+  border-left: 2px solid var(--fg);
+  padding-left: 0.9rem;
+}
+.marks .m .k {
+  color: var(--fg2);
+}
+.marks .m .v {
+  font-weight: 400;
+  font-size: var(--t-body);
+  line-height: 1.4;
+  margin-top: 0.2rem;
+}
+html[data-lens="promise"] .marks::before {
+  content: "↑ включи «устройство», чтобы разметить экран";
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: var(--t-label);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg2);
+}
+
+/* ======================= РАЗДВОЕНИЕ (зона 04) ======================= */
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: 2rem 0;
+  max-width: 44rem;
+  border: 1px solid var(--line2);
+}
+.split > div {
+  padding: 1.5rem;
+}
+.split .a {
+  border-right: 1px solid var(--line2);
+}
+.split .w {
+  color: var(--fg2);
+  margin-bottom: 0.7rem;
+}
+.split h4 {
+  font-weight: 400;
+  font-size: var(--t-sub);
+  letter-spacing: -0.01em;
+  margin: 0 0 0.4rem;
+}
+.split p {
+  font-weight: 400;
+  font-size: var(--t-body);
+  margin: 0;
+  line-height: 1.5;
+  color: var(--fg2);
+}
+
+/* ======================= МЕХАНИКИ (зона 05) ======================= */
+.mech {
+  margin: 2rem 0;
+  max-width: 38rem;
+  border-top: 1px solid var(--line);
+}
+.mech .r {
+  display: grid;
+  grid-template-columns: 28px 8rem 1fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.95rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.mech svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--fg);
+  fill: none;
+  stroke-width: 1.5;
+}
+.mech .nm {
+  letter-spacing: 0.07em;
+}
+.mech .fn {
+  font-weight: 400;
+  font-size: var(--t-body);
+  color: var(--fg2);
+  line-height: 1.4;
+}
+
+/* ======================= КРУПНОЕ ЧИСЛО (зона 06) ======================= */
+.bignum {
+  font-size: var(--t-display);
+  line-height: 0.95;
+  margin: 1.6rem 0 0.6rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.bigsub {
+  font-weight: 400;
+  font-size: var(--t-body);
+  color: var(--fg2);
+  max-width: 30rem;
+}
+
+/* ======================= ВЫХОД / КРИТЕРИЙ ======================= */
+.exit {
+  margin-top: 3rem;
+  border-top: 1px solid var(--fg);
+  padding-top: 1.8rem;
+  max-width: 33rem;
+}
+.crit {
+  font-weight: 400;
+  font-size: var(--t-sub);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  margin-top: 1.1rem;
+}
+
+/* ======================= КОЛОФОН ======================= */
+.colo {
+  background: var(--bg);
+  color: var(--fg);
+  padding: clamp(4rem, 10vh, 6rem) 0 7rem;
+  border-top: 1px solid var(--line);
+}
+.colo .shell {
+  max-width: 46rem;
+}
+.colo h2 {
+  font-size: var(--t-display);
+  margin: 0 0 1.8rem;
+}
+.sg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--line2);
+  border: 1px solid var(--line2);
+  margin-bottom: 2.2rem;
+}
+.sg > div {
+  background: var(--bg);
+  padding: 1.3rem 1.4rem;
+}
+.sg h3 {
+  color: var(--fg2);
+  margin: 0 0 0.9rem;
+}
+.sg .f1 {
+  font-weight: 700;
+  font-size: var(--t-sub);
+  letter-spacing: -0.02em;
+}
+.sw {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: none;
+  margin: 0.4rem 0;
+}
+.sw b {
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  display: inline-block;
+  border: 1px solid var(--line2);
+  flex: 0 0 auto;
+}
+.cr {
+  font-weight: 400;
+  font-size: var(--t-body);
+  line-height: 1.9;
+  color: var(--fg2);
+}
+.cr b {
+  color: var(--fg);
+}
+
+/* ======================= ВЕРХНЯЯ ПОЛОСА ПРОГРЕССА ======================= */
+
+/* layout.css — СКЕЛЕТ: контейнеры, журнальная 12-колоночная сетка и hero.
+   (Внешний вид компонентов — в style.css; адаптив — в adaptive.css.) */
+
+/* ======================= КОНТЕЙНЕР + ЗОНЫ ======================= */
+.shell {
+  max-width: 74rem;
+  margin: 0 auto;
+  padding: 0 clamp(1.2rem, 4vw, 2.6rem);
+}
+section.zone {
+  padding: clamp(5.5rem, 13vh, 10rem) 0;
+  scroll-margin-top: 4.5rem;
+  position: relative;
+}
+
+/* журнальная сетка: текст и медиа раскладываются по 12 колонкам.
+   Конкретные колонки заданы инлайном в index.html (grid-column: ... ),
+   поэтому зоны асимметричны и чередуются. */
+.ed {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: clamp(1rem, 2.4vw, 2rem);
+  align-items: start;
+  position: relative;
+  z-index: 1;
+}
+.txt {
+  max-width: 38rem;
+}
+.media {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.9rem, 2vw, 1.4rem);
+}
+
+/* ======================= HERO (скролл-захват) ======================= */
+.capture {
+  position: relative;
+  height: 380vh;
+} /* высота задаёт длину «захвата» */
+.stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  min-height: 580px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  background: var(--bg);
+}
+.stage .veil {
+  position: absolute;
+  inset: 0;
+  background: #0a0a0a;
+  opacity: clamp(0, calc((var(--p) - 0.5) / 0.32), 1);
+}
+
+.hpromise {
+  position: relative;
+  z-index: 2;
+  padding: 0 1.4rem;
+  max-width: 42rem;
+  opacity: clamp(0, calc((0.66 - var(--p)) / 0.22), 1);
+  transform: translateY(calc(var(--p) * -1.4rem));
+}
+.hpromise h1 {
+  font-size: var(--t-display);
+  line-height: 0.96;
+  margin: 0 0 0.35em;
+}
+.hpromise .sub {
+  font-weight: 400;
+  font-size: var(--t-sub);
+  color: var(--fg2);
+}
+.breathe {
+  animation: breathe 7s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.84;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.hstreak {
+  position: absolute;
+  z-index: 3;
+  top: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  color: #f4f4f1;
+  opacity: clamp(0, calc((var(--p) - 0.34) / 0.12), 1);
+}
+.hstreak .n {
+  display: block;
+  font-size: var(--t-display);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.hstreak .l {
+  color: #a6a6a2;
+}
+
+.hpush {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(92%, 31rem);
+  text-align: left;
+  background: #121212;
+  border: 1px solid #2e2e2e;
+  border-radius: 16px;
+  padding: 1rem 1.1rem;
+  display: flex;
+  gap: 0.85rem;
+  opacity: clamp(0, calc((var(--p) - 0.52) / 0.1), 1);
+}
+.hpush .ic {
+  flex: 0 0 38px;
+  height: 38px;
+  border-radius: 11px;
+  border: 1px solid #3a3a3a;
+  display: grid;
+  place-items: center;
+}
+.hpush .ic svg {
+  width: 19px;
+  height: 19px;
+  stroke: #f4f4f1;
+  fill: none;
+  stroke-width: 1.6;
+}
+.hpush .ap {
+  color: #7d7d7a;
+  margin-bottom: 0.3rem;
+}
+.hpush .tx {
+  font-weight: 400;
+  font-size: var(--t-body);
+  color: #ececea;
+  line-height: 1.45;
+}
+
+.hpay {
+  position: absolute;
+  z-index: 5;
+  inset: auto 0 0 0;
+  padding: 1.9rem 1.4rem calc(2rem + env(safe-area-inset-bottom, 0px));
+  text-align: center;
+  background: linear-gradient(180deg, transparent, #0a0a0a 44%);
+  transform: translateY(
+    calc((1 - clamp(0, calc((var(--p) - 0.78) / 0.16), 1)) * 100%)
+  );
+}
+.hpay h3 {
+  font-weight: 400;
+  font-size: var(--t-sub);
+  color: #fff;
+  margin: 0 0 0.15rem;
+  letter-spacing: -0.01em;
+}
+.hpay .d {
+  font-weight: 400;
+  font-size: var(--t-body);
+  color: #8a8a87;
+  margin: 0 0 1rem;
+}
+.hpay .b {
+  display: inline-block;
+  background: #f4f4f1;
+  color: #0a0a0a;
+  border-radius: 999px;
+  padding: 0.72rem 1.7rem;
+}
+.hpay .pr {
+  display: block;
+  color: #8a8a87;
+  margin-top: 0.7rem;
+}
+
+.cue {
+  position: absolute;
+  z-index: 3;
+  bottom: calc(1.8rem + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--fg2);
+  opacity: clamp(0, calc((0.16 - var(--p)) / 0.1), 1);
+}
