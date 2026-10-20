@@ -179,3 +179,43 @@
     if (s) io2.observe(s);
   });
 })();
+
+/* ===== «выход, который не выпускает» ===== */
+(function () {
+  var modal = document.getElementById("trapModal");
+  if (modal) {
+    var steps = modal.querySelectorAll(".trap-step");
+    function show(n) {
+      steps.forEach(function (s) {
+        s.classList.toggle("on", s.getAttribute("data-step") === String(n));
+      });
+    }
+    function open() {
+      show(1);
+      modal.classList.add("open");
+    }
+    function close() {
+      modal.classList.remove("open");
+    }
+    var openBtn = document.getElementById("trapOpen");
+    if (openBtn) openBtn.addEventListener("click", open);
+    var x = document.getElementById("trapX");
+    if (x) x.addEventListener("click", close);
+    modal.addEventListener("click", function (e) {
+      var go = e.target.getAttribute && e.target.getAttribute("data-go");
+      if (go === "close") close();
+      else if (go) show(go);
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") close();
+    });
+  }
+  var realBtn = document.getElementById("realExit"),
+    realDone = document.getElementById("realDone");
+  if (realBtn && realDone) {
+    realBtn.addEventListener("click", function () {
+      realBtn.style.display = "none";
+      realDone.hidden = false;
+    });
+  }
+})();
