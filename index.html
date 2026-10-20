@@ -523,6 +523,12 @@
               объём рынка · у Headspace ≈ 2,8 млн платных подписчиков и ≈ 105
               млн загрузок
             </div>
+            <div class="trap-trigger">
+              <span class="chip">подписка активна</span
+              ><button class="trap-btn" id="trapOpen">
+                Отменить подписку →
+              </button>
+            </div>
             <div class="arch">
               <div class="h"><span class="hint">↗ сменить оптику</span></div>
               <div class="i">
@@ -550,6 +556,12 @@
                 нужен?
               </p>
               <p class="crit">Тест любой практики — даёт ли она тебе уйти.</p>
+              <div class="real-exit-wrap">
+                <button class="real-exit" id="realExit">Уйти</button>
+                <p class="real-done" id="realDone" hidden>
+                  Готово. Ничего подтверждать не нужно — тебя отпустили сразу.
+                </p>
+              </div>
             </div>
           </div>
           <div class="media" style="grid-column: 9 / 13">
@@ -629,6 +641,50 @@
         </div>
       </div>
     </section>
+
+    <div
+      class="trap"
+      id="trapModal"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Отмена подписки"
+    >
+      <div class="trap-card">
+        <button class="trap-x" id="trapX" aria-label="Закрыть">✕</button>
+        <div class="trap-step on" data-step="1">
+          <div class="trap-k">отмена подписки</div>
+          <h3>Вы уверены?</h3>
+          <p>Вы потеряете серию из 46 дней. Весь прогресс обнулится.</p>
+          <button class="trap-primary" data-go="close">Остаться</button>
+          <button class="trap-leave" data-go="2">Всё равно отменить</button>
+        </div>
+        <div class="trap-step" data-step="2">
+          <div class="trap-k">специальное предложение</div>
+          <h3>Останьтесь за полцены</h3>
+          <p>Скидка 50% на следующий год. Только сейчас, только для вас.</p>
+          <button class="trap-primary" data-go="close">Принять скидку</button>
+          <button class="trap-leave" data-go="3">Нет, отменить</button>
+        </div>
+        <div class="trap-step" data-step="3">
+          <div class="trap-k">может, не сейчас</div>
+          <h3>Поставить на паузу?</h3>
+          <p>Заморозим подписку на месяц. Вернётесь, когда захотите.</p>
+          <button class="trap-primary" data-go="close">
+            Поставить на паузу
+          </button>
+          <button class="trap-leave" data-go="4">Отменить сейчас</button>
+        </div>
+        <div class="trap-step" data-step="4">
+          <div class="trap-k">заявка принята</div>
+          <h3>Почти готово</h3>
+          <p>
+            Отмена вступит в силу после подтверждения по ссылке в письме. Письмо
+            придёт в течение 30 дней.
+          </p>
+          <button class="trap-primary" data-go="close">Понятно</button>
+        </div>
+      </div>
+    </div>
 
     <script src="javascripts/scripts.js"></script>
   </body>
