@@ -84,3 +84,14 @@
     transform: none !important;
   }
 }
+
+/* протокол «8 недель» на мобильном: одна колонка, высота по содержимому */
+@media (max-width: 640px) {
+  .frame .ph.proto {
+    aspect-ratio: auto;
+  }
+  .proto .pr-grid {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+  }
+}
