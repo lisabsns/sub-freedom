@@ -303,6 +303,7 @@ em,
   overflow: hidden;
   border: 1px solid var(--line2);
   clip-path: inset(0 0 0 0);
+  background: var(--bg);
 }
 /* фото показываются сразу, без анимации */
 .frame .ph {
@@ -345,10 +346,9 @@ em,
 }
 .cap {
   color: var(--fg2);
-  margin-top: 0.5rem;
-  display: inline-block;
+  display: block;
   background: var(--bg);
-  padding: 0.35rem 0.55rem;
+  padding: 0.45rem 0.55rem;
 }
 
 /* ======================= АННОТАЦИЯ «УСТРОЙСТВО» ======================= */
@@ -816,11 +816,26 @@ section.zone {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 1;
   background: var(--bg);
   opacity: 0.66;
   transition:
     opacity 0.8s ease,
     background 0.8s ease;
+}
+.hero-photo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    var(--bg) 0%,
+    transparent 9%,
+    transparent 91%,
+    var(--bg) 100%
+  );
 }
 html[data-lens="architecture"] .hero-photo::after {
   opacity: 0.5;
@@ -1028,4 +1043,155 @@ html[data-lens="architecture"] .hero-photo::after {
   color: var(--fg2);
   border-top: 1px solid var(--fg);
   padding-top: 0.38rem;
+}
+
+/* ===== интеракция «выход, который не выпускает» ===== */
+.trap-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin: 1.8rem 0;
+  flex-wrap: wrap;
+}
+.trap-btn {
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: var(--t-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid var(--fg);
+  color: var(--fg);
+  border-radius: 2px;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+.trap-btn:hover {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.trap {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 1.2rem;
+  background: rgba(8, 8, 8, 0.92);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s ease,
+    visibility 0.3s;
+}
+.trap.open {
+  opacity: 1;
+  visibility: visible;
+}
+.trap-card {
+  position: relative;
+  width: min(100%, 27rem);
+  background: #141414;
+  border: 1px solid #2e2e2e;
+  border-radius: 14px;
+  padding: 2rem 1.6rem 1.6rem;
+  color: #ededea;
+  text-align: center;
+}
+.trap-x {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.85rem;
+  background: none;
+  border: none;
+  color: #6c6c68;
+  font-size: 1rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.trap-step {
+  display: none;
+}
+.trap-step.on {
+  display: block;
+}
+.trap-k {
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8c8c88;
+  margin-bottom: 0.85rem;
+}
+.trap-step h3 {
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 1.45rem;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.5rem;
+  color: #fff;
+}
+.trap-step p {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #b2b2ae;
+  margin: 0 auto 1.4rem;
+  max-width: 20rem;
+}
+.trap-primary {
+  display: block;
+  width: 100%;
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  background: #f4f4f1;
+  color: #0a0a0a;
+  border: none;
+  border-radius: 999px;
+  padding: 0.85rem;
+  cursor: pointer;
+  margin-bottom: 0.75rem;
+}
+.trap-leave {
+  font-family: var(--font);
+  font-weight: 500;
+  font-size: 0.78rem;
+  background: none;
+  border: none;
+  color: #7c7c78;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.real-exit-wrap {
+  margin-top: 1.8rem;
+}
+.real-exit {
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: var(--t-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--fg);
+  color: var(--bg);
+  border: none;
+  border-radius: 999px;
+  padding: 0.75rem 1.7rem;
+  cursor: pointer;
+}
+.real-done {
+  margin-top: 1.1rem;
+  font-weight: 400;
+  font-size: var(--t-sub);
+  line-height: 1.3;
+  max-width: 28rem;
 }
