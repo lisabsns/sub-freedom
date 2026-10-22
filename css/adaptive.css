@@ -1,0 +1,96 @@
+/* adaptive.css — адаптив. Подключается ПОСЛЕДНИМ, чтобы перекрывать остальное. */
+
+/* прячем левый индекс эпох, когда места мало */
+/* Та же крупная роль на узком телефоне: целиком помещается «продолжается». */
+@media (max-width: 400px) {
+  :root {
+    --t-display: clamp(2.3rem, calc(13.25vw - 0.45rem), 2.75rem);
+  }
+}
+
+@media (max-width: 980px) {
+  .index {
+    display: none;
+  }
+}
+
+/* планшет/телефон: сетка складывается в одну колонку */
+@media (max-width: 768px) {
+  .ed {
+    display: block;
+  }
+  .ed .txt,
+  .ed .media {
+    max-width: none;
+  }
+  .ed .media {
+    margin-top: 1.6rem;
+  }
+
+  .yearbg {
+    display: none;
+  } /* декоративные годы убираем, чтобы не мешали */
+  .split {
+    grid-template-columns: 1fr;
+  }
+  .split .a {
+    border-right: 0;
+    border-bottom: 1px solid var(--line2);
+  }
+
+  .study .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mech .r {
+    grid-template-columns: 24px 1fr;
+    gap: 0.7rem;
+  }
+  .mech .fn {
+    grid-column: 1 / -1;
+    margin-top: -0.4rem;
+  }
+
+  .hpush {
+    box-sizing: border-box;
+    top: auto;
+    bottom: calc(16rem + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%);
+    width: min(31rem, calc(100% - 2rem));
+  }
+  .hpush > :last-child {
+    min-width: 0;
+  }
+  .hstreak {
+    /* На низком экране оставляем место под плашку и Premium. */
+    top: clamp(0.25rem, calc(100% - 36rem), 16%);
+  }
+}
+
+/* уважение к «уменьшить движение» — выключаем анимации */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+  .frame .ph img.photo-fade {
+    opacity: 1;
+  }
+  .par {
+    transform: none !important;
+  }
+  body::before,
+  .stage::after,
+  .turn::before,
+  .hpay::before {
+    animation: none;
+    transform: none;
+  }
+}
