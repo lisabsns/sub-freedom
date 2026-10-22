@@ -1,0 +1,12 @@
+# Локальные материалы разработки
+/.local/
+/review/
+/AGENTS.md
+/PROJECT_CONTEXT.md
+
+# Настройки редакторов и системные файлы
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
