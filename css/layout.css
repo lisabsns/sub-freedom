@@ -1,0 +1,1220 @@
+/* layout.css — типографика, оформление, сетка и компоненты страницы.
+   Подключается из style.css; адаптивные правила находятся в adaptive.css. */
+
+/* ======================= ТОКЕНЫ ======================= */
+:root {
+  --font: "NT Somic", system-ui, -apple-system, sans-serif;
+  --grain-image: url("../images/grain.svg");
+  --grain-opacity: 0.055;
+  --grain-dark-opacity: 0.065;
+
+  /* Общие роли в обеих оптиках; крупная роль увеличена примерно на 5%. */
+  --t-display: clamp(
+    2.75rem,
+    6.95vw,
+    5.5rem
+  );
+  --t-sub: clamp(
+    1.28rem,
+    2.3vw,
+    1.7rem
+  );
+  --t-body: 1rem; /* основной текст — 400 */
+  --t-label: 0.75rem; /* подписи и интерфейс — 700 */
+
+  /* ЧБ — регистр ОБЕЩАНИЕ (светлый) */
+  --bg: #ffffff;
+  --fg: #0c0c0c;
+  --fg2: #6c6c69;
+  --fg3: #a0a09c;
+  --line: #e4e4e1;
+  --line2: #c9c9c5;
+  --control-outline: rgb(12 12 12 / 0.4);
+  --chip-bg: #0c0c0c;
+  --chip-fg: #ffffff;
+  --slot: #d9d9d4;
+  --slot-fg: #595953; /* серый квадрат-слот под фото */
+
+  --measure: 34rem; /* комфортная длина строки */
+
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+/* регистр УСТРОЙСТВО — настоящая инверсия (переключается тумблером) */
+html[data-lens="architecture"] {
+  --grain-opacity: var(--grain-dark-opacity);
+  --bg: #0a0a0a;
+  --fg: #f4f4f1;
+  --fg2: #a6a6a2;
+  --fg3: #54544f;
+  --line: #242424;
+  --line2: #3a3a3a;
+  --control-outline: rgb(244 244 241 / 0.4);
+  --chip-bg: #f4f4f1;
+  --chip-fg: #0a0a0a;
+  --slot: #202020;
+  --slot-fg: #8c8c87;
+}
+
+/* ======================= БАЗА ======================= */
+/* Явный фон корня сохраняет фон body внутри его слоя для инверсии курсора. */
+html {
+  background: var(--bg);
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  isolation: isolate; /* Фоновое зерно остаётся внутри слоя страницы. */
+  font-family: var(--font);
+  font-size: var(--t-body);
+  font-weight: 400;
+  line-height: 1.65;
+  font-synthesis: none;
+  overflow-wrap: normal;
+  background: var(--bg);
+  color: var(--fg);
+  transition:
+    background 0.8s ease,
+    color 0.8s ease;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip; /* убирает боковые белые поля от переполнения; не ломает sticky */
+}
+
+/* Зерно под текстом: один маленький тайл, анимируется только его слой. */
+body::before,
+.stage::after,
+.turn::before,
+.hpay::before {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  background-image: var(--grain-image);
+  background-repeat: repeat;
+  background-size: 192px 192px;
+  opacity: var(--grain-opacity);
+  pointer-events: none;
+  animation: grain-drift 1.2s steps(1, end) infinite;
+}
+body::before {
+  position: fixed;
+  z-index: -1;
+}
+.stage::after {
+  z-index: 1; /* Поверх затемнения hero, под заголовком и уведомлением. */
+}
+.turn::before {
+  z-index: 0;
+  opacity: var(--grain-dark-opacity); /* Эта плашка тёмная в обеих оптиках. */
+}
+.turn::before,
+.hpay::before {
+  /* Внутри плашек сдвигается тайл, чтобы декор не расширял их границы. */
+  inset: 0;
+  animation-name: grain-surface;
+}
+.hpay::before {
+  z-index: -1; /* Под текстом, внутри существующего transform-слоя Premium. */
+  opacity: var(--grain-dark-opacity);
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 44%);
+  mask-image: linear-gradient(180deg, transparent, #000 44%);
+}
+@keyframes grain-drift {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-3px, 2px); }
+  40% { transform: translate(2px, -3px); }
+  60% { transform: translate(-2px, -1px); }
+  80% { transform: translate(3px, 3px); }
+}
+@keyframes grain-surface {
+  0%, 100% { background-position: 0 0; }
+  20% { background-position: -3px 2px; }
+  40% { background-position: 2px -3px; }
+  60% { background-position: -2px -1px; }
+  80% { background-position: 3px 3px; }
+}
+
+/* SVG-курсор инвертирует фон под кольцом и точкой, не перехватывая клики. */
+.custom-cursor { display: none; }
+@media (hover: hover) and (pointer: fine) {
+  .custom-cursor {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 64px;
+    height: 64px;
+    z-index: 1000;
+    visibility: hidden;
+    pointer-events: none;
+    mix-blend-mode: difference;
+    transform: translate3d(-100px, -100px, 0);
+  }
+  .custom-cursor.is-visible { visibility: visible; }
+  .custom-cursor svg { display: block; width: 100%; height: 100%; }
+  .custom-cursor .cursor-ring {
+    transform-origin: 32px 32px;
+    transition: transform 0.18s ease-out;
+  }
+  .custom-cursor.is-hovered .cursor-ring { transform: scale(1.6); }
+  html.has-custom-cursor,
+  html.has-custom-cursor * { cursor: none !important; }
+}
+
+p {
+  margin: 0 0 1.1em;
+  max-width: var(--measure);
+  text-wrap: pretty;
+}
+b,
+strong {
+  font-weight: inherit;
+  letter-spacing: inherit;
+}
+em,
+.em {
+  font-style: normal;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+/* Четыре сочетания размера и насыщенности для всего читаемого текста.
+   Даты на фоне сохранены как векторный декор. */
+.zh, .hpromise h1, .turn h2, .bignum, .svc .snum, .hstreak .n {
+  font-size: var(--t-display);
+  font-weight: 700;
+  line-height: 1.06;
+}
+.lede, .hpromise .sub, .turn .q .big, .split h4, .hpay h3,
+.trap-step h3, .crit, .real-done {
+  font-size: var(--t-sub);
+  font-weight: 400;
+  line-height: 1.4;
+}
+.label, .chip, .ulbl, .zhead .era, .bar, .toggle, .index a,
+.cap, .hstreak .l, .hpush .ap, .hpay .b, .hpay .pr, .cue, .turn .f,
+.svc .greet, .svc .sday, .svc .cont, .svc .left, .marks .k, .split .w,
+.mech .nm, .exit .lab, .arch .hint, .marks::before, .frame .ph::before,
+.frame .ph.proto, .trap-btn, .trap-x, .trap-k, .trap-primary, .trap-leave, .real-exit {
+  font-family: var(--font);
+  font-size: var(--t-label);
+  font-weight: 700;
+  line-height: 1.4;
+}
+.zh, .hpromise h1, .turn h2, .lede, .split h4, .trap-step h3, .crit {
+  text-wrap: balance;
+}
+.keep { white-space: nowrap; }
+
+/* L1 — display: жирный, плотный, но без слипания букв */
+.zh,
+.hpromise h1,
+.turn h2,
+.bignum,
+.svc .snum,
+.hstreak .n,
+.yearbg {
+  letter-spacing: -0.02em;
+}
+.zh,
+.hpromise h1,
+.turn h2,
+.lede {
+  text-wrap: balance;
+}
+
+/* L4 — метка (капслок, разрядка) */
+.label,
+.chip,
+.ulbl,
+.zhead .era,
+.bar,
+.index a,
+.cap,
+.hstreak .l,
+.hpush .ap,
+.hpay .b,
+.hpay .pr,
+.cue,
+.turn .f,
+.svc .greet,
+.svc .sday,
+.svc .cont,
+.marks .k,
+.split .w,
+.mech .nm,
+.exit .lab {
+  font-family: var(--font);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.chip {
+  display: inline-block;
+  background: var(--chip-bg);
+  color: var(--chip-fg);
+  padding: 0.32rem 0.5rem;
+  border-radius: 2px;
+}
+
+/* ======================= ШАПКА ======================= */
+.bar {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: calc(0.85rem + env(safe-area-inset-top, 0px))
+    clamp(1.1rem, 3vw, 2rem) 0.85rem;
+  background: transparent;
+  pointer-events: none;
+}
+.bar[hidden] {
+  display: none;
+}
+.bar:not([hidden]) {
+  animation: lens-appear 0.7s ease-out both;
+}
+@keyframes lens-appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.toggle {
+  border: 1px solid var(--fg);
+  background: var(--bg);
+  color: var(--fg);
+  border-radius: 2px;
+  padding: 0.5rem 0.8rem;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-family: var(--font);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  pointer-events: auto;
+  box-shadow: 0 2px 12px rgb(0 0 0 / 0.14);
+  transition:
+    background 0.8s ease,
+    color 0.8s ease,
+    border-color 0.8s ease;
+}
+.toggle .on {
+  opacity: 1;
+}
+.toggle .off {
+  opacity: 0.35;
+}
+
+/* ======================= ИНДЕКС ЭПОХ (слева) ======================= */
+.index {
+  position: fixed;
+  left: clamp(1rem, 2.2vw, 1.6rem);
+  top: 0;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.4rem;
+  pointer-events: none;
+}
+.index a {
+  pointer-events: none;
+  text-decoration: none;
+  color: var(--fg2);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  opacity: 0.25;
+  letter-spacing: 0.06em;
+  transition:
+    opacity 0.3s,
+    color 0.3s;
+}
+.index a::before {
+  content: "";
+  width: 12px;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.3s;
+}
+.index a.on {
+  opacity: 0.5;
+}
+.index a.on::before {
+  width: 18px;
+}
+.index.is-unlocked a {
+  pointer-events: auto;
+}
+.index.is-unlocked a:hover,
+.index.is-unlocked a:focus-visible {
+  opacity: 1;
+  color: var(--fg);
+}
+
+/* ======================= СПАЙН (правый край) ======================= */
+.spine {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  z-index: 4;
+  background: var(--line2);
+  opacity: 0.9;
+  pointer-events: none;
+}
+.spine::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2px;
+  height: var(--prog, 0%);
+  background: var(--fg);
+}
+
+/* ======================= ЗАГОЛОВКИ ЗОН ======================= */
+.zhead {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 1.4rem;
+}
+.zhead .era {
+  color: var(--fg2);
+}
+.zh {
+  margin: 0 0 1rem;
+}
+.lede {
+  letter-spacing: -0.015em;
+  max-width: 30rem;
+  margin: 0 0 1.3rem;
+}
+.body-note {
+  color: var(--fg2);
+}
+
+/* ======================= ДЕКОР: год на фоне ======================= */
+.yearbg {
+  --decor-size: clamp(6rem, 20vw, 18rem);
+  position: absolute;
+  z-index: 0;
+  color: var(--fg);
+  opacity: 0.04;
+  pointer-events: none;
+  letter-spacing: -0.04em;
+}
+/* ======================= СЛОТЫ ПОД ФОТО ======================= */
+/* серый квадрат с подписью. Чтобы вставить фото — положи <img> внутрь .ph */
+.frame {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line2);
+  background: var(--bg);
+}
+/* Размер кадра постоянный; анимируется только прозрачность фотографии. */
+.frame .ph {
+  position: relative;
+  aspect-ratio: var(--ar, 3 / 2);
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 1.3rem;
+  background: var(--slot);
+}
+.frame .ph::before {
+  content: "ФОТО";
+  position: absolute;
+  top: 0.6rem;
+  left: 0.7rem;
+  font-family: var(--font);
+  letter-spacing: 0.04em;
+  color: var(--slot-fg);
+  opacity: 0.75;
+}
+.frame .ph span {
+  font-family: var(--font);
+  color: var(--slot-fg);
+  max-width: 17rem;
+}
+.frame .ph img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: grayscale(1) contrast(1.03);
+}
+.frame .ph img.photo-fade {
+  opacity: 0;
+}
+.frame .ph img.app-screen {
+  /* Показываем нижние кнопки внутри прежнего кадра. */
+  object-position: center 80%;
+}
+.frame .ph img.photo-fade.is-visible {
+  opacity: 1;
+  transition: opacity 0.9s ease;
+}
+/* Фотографии: неподвижное зерно только внутри кадра, без схемы и подписи. */
+.frame .ph:not(.proto)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-image: var(--grain-image);
+  background-repeat: repeat;
+  background-size: 192px 192px;
+  opacity: 0.045;
+  pointer-events: none;
+}
+.cap {
+  color: var(--fg2);
+  display: block;
+  background: var(--bg);
+  padding: 0.45rem 0.55rem;
+}
+
+/* ======================= АННОТАЦИЯ «УСТРОЙСТВО» ======================= */
+.arch {
+  margin-top: 1.8rem;
+  border-top: 1px solid var(--line);
+  padding-top: 1.1rem;
+  max-width: var(--measure);
+  opacity: 0.4;
+  transition: opacity 0.6s ease;
+}
+.arch .h {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.arch .hint {
+  font-family: var(--font);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fg2);
+}
+.arch .i,
+.arch .cite {
+  display: none;
+}
+html[data-lens="architecture"] .arch {
+  opacity: 1;
+}
+html[data-lens="architecture"] .arch .h {
+  display: none;
+}
+html[data-lens="architecture"] .arch .i,
+html[data-lens="architecture"] .arch .cite {
+  display: block;
+}
+.arch .i {
+  margin-top: 0.9rem;
+  color: var(--fg);
+}
+.arch .cite {
+  margin-top: 1rem;
+  color: var(--fg);
+  border-left: 2px solid var(--fg);
+  padding-left: 0.9rem;
+}
+
+/* появление блоков при скролле */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.9s ease,
+    transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.js .reveal.in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ======================= ПОВОРОТНАЯ ПЛАШКА + ВОПРОС ======================= */
+.turn {
+  background: var(--bg);
+  color: var(--fg);
+  padding: clamp(4rem, 10vh, 7rem) 0;
+  border-top: 1px solid var(--line);
+  position: relative;
+  overflow: hidden;
+}
+html[data-lens="promise"] .turn {
+  background: #0a0a0a;
+  color: #f4f4f1;
+  border: none;
+}
+.turn .shell {
+  max-width: 46rem;
+  position: relative;
+  z-index: 1;
+}
+.turn h2 {
+  margin: 0;
+  max-width: 34rem;
+}
+.turn .q {
+  margin-top: 2.2rem;
+  max-width: 34rem;
+}
+html[data-lens="promise"] .turn .q {
+  color: #cfcfcc;
+}
+.turn .q .big {
+  display: block;
+  margin-top: 0.7rem;
+  color: #fff;
+}
+html[data-lens="architecture"] .turn .q .big {
+  color: var(--fg);
+}
+.turn .f {
+  color: #7d7d7a;
+  margin-top: 1.8rem;
+}
+html[data-lens="architecture"] .turn .f {
+  color: var(--fg2);
+}
+
+/* ======================= РАЗБОР ИНТЕРФЕЙСА (модель) ======================= */
+.study {
+  padding: clamp(4.5rem, 10vh, 8rem) 0;
+  position: relative;
+}
+.study .lead {
+  max-width: 34rem;
+  margin-bottom: 2.2rem;
+}
+.study .grid {
+  display: grid;
+  grid-template-columns: minmax(0, 22rem) 1fr;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: start;
+  max-width: 52rem;
+}
+.svc {
+  border: 1px solid var(--line2);
+  border-radius: 18px;
+  padding: 1.4rem;
+  position: relative;
+}
+.svc .model {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+}
+.svc .greet {
+  color: var(--fg2);
+}
+.svc .snum {
+  margin: 0.4rem 0 0.1rem;
+  font-variant-numeric: tabular-nums;
+}
+.svc .sday {
+  color: var(--fg2);
+}
+.svc .chain {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 1.1rem 0;
+}
+.svc .chain i {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  background: var(--fg);
+  opacity: 0.72;
+}
+.svc .chain i.brk {
+  background: transparent;
+  border: 1.5px solid var(--fg);
+  opacity: 1;
+}
+.svc .cont {
+  display: block;
+  width: 100%;
+  text-align: center;
+  background: transparent;
+  color: var(--fg);
+  border: none;
+  box-shadow: inset 0 0 0 1px var(--control-outline);
+  border-radius: 999px;
+  padding: 0.8rem;
+  margin-top: 0.4rem;
+  cursor: default;
+}
+.svc .left {
+  color: var(--fg2);
+  text-align: center;
+  margin-top: 0.7rem;
+}
+.marks {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  opacity: 0.25;
+  transition: opacity 0.7s;
+}
+html[data-lens="architecture"] .marks {
+  opacity: 1;
+}
+.marks .m {
+  border-left: 2px solid var(--fg);
+  padding-left: 0.9rem;
+}
+.marks .m .k {
+  color: var(--fg2);
+}
+.marks .m .v {
+  margin-top: 0.2rem;
+}
+html[data-lens="promise"] .marks::before {
+  content: "↑ включи «устройство», чтобы разметить экран";
+  font-family: var(--font);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fg2);
+}
+
+/* ======================= РАЗДВОЕНИЕ (зона 04) ======================= */
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: 2rem 0;
+  max-width: 44rem;
+  border: 1px solid var(--line2);
+}
+.split > div {
+  padding: 1.5rem;
+}
+.split .a {
+  border-right: 1px solid var(--line2);
+}
+.split .w {
+  color: var(--fg2);
+  margin-bottom: 0.7rem;
+}
+.split h4 {
+  letter-spacing: -0.01em;
+  margin: 0 0 0.4rem;
+}
+.split p {
+  margin: 0;
+  color: var(--fg2);
+}
+
+/* ======================= МЕХАНИКИ (зона 05) ======================= */
+.mech {
+  margin: 2rem 0;
+  max-width: 38rem;
+  border-top: 1px solid var(--line);
+}
+.mech .r {
+  display: grid;
+  grid-template-columns: 28px 8rem 1fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.95rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.mech svg {
+  width: 20px;
+  height: 20px;
+  stroke: var(--fg);
+  fill: none;
+  stroke-width: 1.5;
+}
+.mech .nm {
+  letter-spacing: 0.07em;
+}
+.mech .fn {
+  color: var(--fg2);
+}
+
+/* ======================= КРУПНОЕ ЧИСЛО (зона 06) ======================= */
+.bignum {
+  margin: 1.6rem 0 0.6rem;
+  font-variant-numeric: tabular-nums;
+}
+.bigsub {
+  color: var(--fg2);
+  max-width: 30rem;
+}
+
+/* ======================= ВЫХОД / КРИТЕРИЙ ======================= */
+.exit {
+  margin-top: 3rem;
+  border-top: 1px solid var(--fg);
+  padding-top: 1.8rem;
+  max-width: 33rem;
+}
+.crit {
+  letter-spacing: -0.01em;
+  margin-top: 1.1rem;
+}
+
+/* ======================= ВЕРХНЯЯ ПОЛОСА ПРОГРЕССА ======================= */
+
+/* ======================= КОНТЕЙНЕР + ЗОНЫ ======================= */
+.shell {
+  max-width: 74rem;
+  margin: 0 auto;
+  padding: 0 clamp(1.2rem, 4vw, 2.6rem);
+}
+section.zone {
+  padding: clamp(5.5rem, 13vh, 10rem) 0;
+  scroll-margin-top: 4.5rem;
+  position: relative;
+}
+
+/* журнальная сетка: текст и медиа раскладываются по 12 колонкам.
+   Конкретные колонки заданы инлайном в index.html (grid-column: ... ),
+   поэтому зоны асимметричны и чередуются. */
+.ed {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: clamp(1rem, 2.4vw, 2rem);
+  align-items: start;
+  position: relative;
+  z-index: 1;
+}
+.txt {
+  max-width: 38rem;
+}
+.media {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.9rem, 2vw, 1.4rem);
+}
+
+/* ======================= HERO (скролл-захват) ======================= */
+.capture {
+  position: relative;
+  height: 380vh;
+} /* высота задаёт длину «захвата» */
+.stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  min-height: 580px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  background: var(--bg);
+}
+.stage .veil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: #0a0a0a;
+  opacity: clamp(0, calc((var(--p) - 0.5) / 0.32), 1);
+}
+.hpromise {
+  position: relative;
+  z-index: 2;
+  padding: 0 1.4rem;
+  max-width: 42rem;
+  opacity: clamp(0, calc((0.66 - var(--p)) / 0.22), 1);
+  transform: translateY(calc(var(--p) * -1.4rem));
+}
+.hpromise h1 {
+  margin: 0 0 0.35em;
+}
+.hpromise .sub {
+  color: var(--fg2);
+}
+.breathe {
+  animation: breathe 7s ease-in-out infinite;
+}
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.84;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.hstreak {
+  position: absolute;
+  z-index: 3;
+  top: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  color: #f4f4f1;
+  opacity: clamp(0, calc((var(--p) - 0.34) / 0.12), 1);
+}
+.hstreak .n {
+  display: block;
+  font-variant-numeric: tabular-nums;
+}
+.hstreak .l {
+  color: #a6a6a2;
+}
+
+.hpush {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(92%, 31rem);
+  text-align: left;
+  background: #121212;
+  border: 1px solid #2e2e2e;
+  border-radius: 16px;
+  padding: 1rem 1.1rem;
+  display: flex;
+  gap: 0.85rem;
+  opacity: clamp(0, calc((var(--p) - 0.52) / 0.1), 1);
+}
+.hpush .ic {
+  flex: 0 0 38px;
+  height: 38px;
+  border-radius: 11px;
+  border: 1px solid #3a3a3a;
+  display: grid;
+  place-items: center;
+}
+.hpush .ic svg {
+  width: 19px;
+  height: 19px;
+  stroke: #f4f4f1;
+  fill: none;
+  stroke-width: 1.6;
+}
+.hpush .ap {
+  color: #7d7d7a;
+  margin-bottom: 0.3rem;
+}
+.hpush .tx {
+  color: #ececea;
+}
+
+.hpay {
+  position: absolute;
+  z-index: 5;
+  inset: auto 0 0 0;
+  padding: 1.9rem 1.4rem calc(2rem + env(safe-area-inset-bottom, 0px));
+  text-align: center;
+  background: linear-gradient(180deg, transparent, #0a0a0a 44%);
+  transform: translateY(
+    calc((1 - clamp(0, calc((var(--p) - 0.78) / 0.16), 1)) * 100%)
+  );
+}
+.hpay h3 {
+  color: #fff;
+  margin: 0 0 0.15rem;
+  letter-spacing: -0.01em;
+}
+.hpay .d {
+  color: #8a8a87;
+  margin: 0 0 1rem;
+}
+.hpay .b {
+  display: inline-block;
+  background: transparent;
+  color: #f4f4f1;
+  box-shadow: inset 0 0 0 1px rgb(244 244 241 / 0.45);
+  border-radius: 999px;
+  padding: 0.72rem 1.7rem;
+}
+.hpay .pr {
+  display: block;
+  color: #8a8a87;
+  margin-top: 0.7rem;
+}
+
+.cue {
+  position: absolute;
+  z-index: 3;
+  bottom: calc(1.8rem + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--fg2);
+  opacity: clamp(0, calc((0.16 - var(--p)) / 0.1), 1);
+}
+
+/* ===== MBSR: открытый табличный набор внутри прежней медиаколонки ===== */
+.frame.protocol {
+  border: 0;
+  background: transparent;
+}
+.frame .ph.proto {
+  container-type: inline-size;
+  display: block;
+  place-items: normal;
+  aspect-ratio: auto;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+}
+.frame .ph.proto::before {
+  content: none;
+}
+.proto .pr-head {
+  gap: 1rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+}
+.proto .pr-head > span {
+  color: var(--fg2);
+}
+.proto .pr-head .pr-title {
+  font-size: var(--t-sub);
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--fg);
+}
+.proto .pr-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font: inherit;
+  letter-spacing: normal;
+  font-variant-numeric: tabular-nums;
+}
+.proto .pr-week { width: 3.5rem; }
+.proto .pr-duration { width: 3.75rem; }
+.proto .pr-table th,
+.proto .pr-table td {
+  border-top: 1px solid var(--line2);
+  padding: 0.65rem 0 0.75rem;
+  vertical-align: top;
+  text-align: left;
+}
+.proto .pr-table th { font-weight: 700; }
+.proto .pr-table thead th {
+  border-top: 0;
+  padding: 0 0 0.55rem;
+  color: var(--fg2);
+}
+.proto .pr-table :is(th, td):nth-child(2) {
+  padding-inline: 0.8rem;
+}
+.proto .pr-table tbody td:nth-child(2) {
+  font-size: var(--t-body);
+  font-weight: 400;
+  line-height: 1.65;
+}
+.proto .pr-table :is(th, td):last-child {
+  text-align: right;
+  color: var(--fg2);
+}
+.protocol .cap {
+  padding: 0.8rem 0 0;
+  background: transparent;
+  border-top: 1px solid var(--line2);
+  text-transform: none;
+  letter-spacing: normal;
+}
+/* Адаптация по ширине самой таблицы, в том числе в узкой колонке десктопа. */
+@container (max-width: 18rem) {
+  .proto .pr-table,
+  .proto .pr-table thead,
+  .proto .pr-table tbody { display: block; }
+  .proto .pr-table colgroup { display: none; }
+  .proto .pr-table tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.15rem 0.75rem;
+  }
+  .proto .pr-table tbody tr {
+    border-top: 1px solid var(--line2);
+    padding: 0.65rem 0 0.75rem;
+  }
+  .proto .pr-table :is(th, td) {
+    border: 0;
+    padding: 0;
+  }
+  .proto .pr-table thead tr { padding-bottom: 0.55rem; }
+  .proto .pr-table thead th:nth-child(2) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .proto .pr-table tbody th { grid-area: 1 / 1; }
+  .proto .pr-table td:nth-child(2) {
+    grid-area: 2 / 1 / 3 / -1;
+    padding: 0;
+  }
+  .proto .pr-table :is(th, td):last-child { grid-area: 1 / 2; }
+}
+
+/* ===== интеракция «выход, который не выпускает» ===== */
+.trap-trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin: 1.8rem 0;
+  flex-wrap: wrap;
+}
+.trap-btn,
+.real-exit {
+  font-family: var(--font);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid var(--fg);
+  border-radius: 2px;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  box-shadow:
+    0 2px 0 var(--line2),
+    0 6px 14px rgb(0 0 0 / 0.18);
+  transition:
+    background 0.2s,
+    color 0.2s,
+    box-shadow 0.2s;
+}
+.trap-btn {
+  background: var(--bg);
+  color: var(--fg);
+}
+.trap-btn:hover {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.trap {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 1.2rem;
+  background: rgba(8, 8, 8, 0.92);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s ease,
+    visibility 0.3s;
+}
+.trap.open {
+  opacity: 1;
+  visibility: visible;
+}
+.trap-card {
+  box-sizing: border-box;
+  max-height: calc(100svh - 2.4rem);
+  overflow-y: auto;
+  position: relative;
+  /* Прежняя внешняя ширина на десктопе; на телефоне padding внутри карточки. */
+  width: min(100%, calc(27rem + 3.2rem + 2px));
+  background: #141414;
+  border: 1px solid #2e2e2e;
+  border-radius: 14px;
+  padding: 2rem clamp(1rem, 4vw, 1.6rem) 1.6rem;
+  color: #ededea;
+  text-align: center;
+}
+.trap-x {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.85rem;
+  background: none;
+  border: none;
+  color: #6c6c68;
+  cursor: pointer;
+}
+.trap-step {
+  display: none;
+}
+.trap-step.on {
+  display: block;
+}
+.trap-k {
+  font-family: var(--font);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #8c8c88;
+  margin-bottom: 0.85rem;
+}
+.trap-step h3 {
+  font-family: var(--font);
+  letter-spacing: -0.01em;
+  margin: 0 0 0.5rem;
+  color: #fff;
+}
+.trap-step p {
+  color: #b2b2ae;
+  margin: 0 auto 1.4rem;
+  max-width: 20rem;
+}
+.trap-primary {
+  display: block;
+  width: 100%;
+  font-family: var(--font);
+  letter-spacing: 0.04em;
+  background: #f4f4f1;
+  color: #0a0a0a;
+  border: none;
+  border-radius: 999px;
+  padding: 0.85rem;
+  cursor: pointer;
+  margin-bottom: 0.75rem;
+}
+.trap-leave {
+  font-family: var(--font);
+  background: none;
+  border: none;
+  color: #7c7c78;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.real-exit-wrap {
+  margin-top: 1.8rem;
+}
+.real-exit {
+  background: var(--fg);
+  color: var(--bg);
+}
+.real-done {
+  margin-top: 1.1rem;
+  max-width: 28rem;
+}
+
+/* Исходные контуры NT Somic: тот же масштаб, цвет и параллакс. */
+.yearbg {
+  width: calc(var(--decor-size) * var(--decor-width));
+  height: calc(var(--decor-size) * var(--decor-height));
+}
+.yearbg svg { display: block; width: 100%; height: 100%; fill: currentColor; }
+/* Сдвигаем сам рисунок: расчёт параллакса родителя остаётся прежним. */
+.yearbg svg {
+  /* Контуры NT Somic выходят за viewBox; края цифр должны рисоваться целиком. */
+  overflow: visible;
+  transform: translateY(-10px);
+}
+.yearbg[data-decor="1957"] { --decor-width: 2.0430001152886286; --decor-height: 0.8; }
+.yearbg[data-decor="1968"] { --decor-width: 2.1290001339382596; --decor-height: 0.8; }
+.yearbg[data-decor="1979"] { --decor-width: 2.061000188191732; --decor-height: 0.8; }
+.yearbg[data-decor="2007"] { --decor-width: 2.351000256008572; --decor-height: 0.8; }
+.yearbg[data-decor="2014"] { --decor-width: 2.1840002271864147; --decor-height: 0.8; }
+.yearbg[data-decor="2026"] { --decor-width: 2.3100001017252603; --decor-height: 0.8; }
