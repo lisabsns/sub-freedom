@@ -1,6 +1,5 @@
 /* adaptive.css — адаптив. Подключается ПОСЛЕДНИМ, чтобы перекрывать остальное. */
 
-/* прячем левый индекс эпох, когда места мало */
 /* Та же крупная роль на узком телефоне: целиком помещается «продолжается». */
 @media (max-width: 400px) {
   :root {
@@ -8,9 +7,58 @@
   }
 }
 
-@media (max-width: 980px) {
+/* Боковой след остаётся только там, где есть свободное поле за сеткой.
+   На остальных экранах — одна строка под управлением, без карточки. */
+@media (max-width: 1439px) {
   .index {
-    display: none;
+    top: calc(3.55rem + env(safe-area-inset-top, 0px));
+    bottom: auto;
+    left: 0;
+    right: 0;
+    flex-direction: row;
+    justify-content: center;
+    gap: 0.35rem;
+    overflow-x: auto;
+    padding: 0.25rem 1.2rem;
+    background: var(--ui-bg, var(--bg));
+    color: var(--ui-fg2, var(--fg2));
+    pointer-events: auto;
+    scrollbar-width: none;
+  }
+  .index a {
+    flex: 0 0 auto;
+    padding: 0.5rem 0.4rem;
+    letter-spacing: 0.02em;
+    color: inherit;
+  }
+  .index::after {
+    display: block;
+    /* Фиксированный слой зерна не уезжает вместе с горизонтальными ссылками. */
+    position: fixed;
+    inset: calc(3.55rem + env(safe-area-inset-top, 0px)) 0 auto;
+    height: calc(1.5rem + var(--t-label) * 1.4);
+  }
+  .index a::before {
+    content: none;
+  }
+  .index a.on,
+  .index a:hover,
+  .index a:focus-visible {
+    color: var(--ui-fg, var(--fg));
+  }
+  .index a.on {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  section.zone {
+    scroll-margin-top: 6.5rem;
+  }
+}
+@media (max-width: 600px) {
+  .index {
+    justify-content: flex-start;
+    gap: 0.15rem;
+    padding-inline: 0.8rem;
   }
 }
 
@@ -63,7 +111,7 @@
   }
   .hstreak {
     /* На низком экране оставляем место под плашку и Premium. */
-    top: clamp(0.25rem, calc(100% - 36rem), 16%);
+    top: clamp(6rem, calc(100% - 36rem), 16%);
   }
 }
 
@@ -89,7 +137,9 @@
   body::before,
   .stage::after,
   .turn::before,
-  .hpay::before {
+  .hpay::before,
+  .bar::before,
+  .index::after {
     animation: none;
     transform: none;
   }
