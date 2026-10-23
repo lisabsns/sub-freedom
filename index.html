@@ -6,26 +6,26 @@
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
-    <title>Медитация: свобода по подписке</title>
+    <title>Дыши. Остальное подождёт.</title>
 
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
-    <div class="bar" id="lensBar" hidden>
-      <button class="toggle" id="lensBtn" aria-label="Переключить оптику">
-        оптика: <span class="pr-on on">обещание</span> /
-        <span class="ar-on off">устройство</span>
-      </button>
+    <div class="bar" id="lensBar">
+      <div class="toggle" role="group" aria-label="Оптика чтения" aria-describedby="lensExplanation">
+        <button type="button" data-lens-choice="promise" aria-pressed="true">Обещание</button>
+        <button type="button" data-lens-choice="architecture" aria-pressed="false">Устройство</button>
+      </div>
     </div>
 
-    <nav class="index" id="idx" aria-label="Эпохи" inert>
-      <a data-href="#z0" aria-disabled="true">00 вход</a
-      ><a data-href="#z1" aria-disabled="true">01 · 1950-е</a
-      ><a data-href="#z2" aria-disabled="true">02 · 1960–70</a
-      ><a data-href="#z3" aria-disabled="true">03 · 1979</a
-      ><a data-href="#z4" aria-disabled="true">04 · 2007</a
-      ><a data-href="#z5" aria-disabled="true">05 · 2010–20</a
-      ><a data-href="#z6" aria-disabled="true">06 · 2026</a>
+    <nav class="index" id="idx" aria-label="Пройденные разделы">
+      <a href="#z0" aria-current="location" class="on">Вход</a>
+      <a href="#z1" hidden>1950-е</a>
+      <a href="#z2" hidden>1960–70</a>
+      <a href="#z3" hidden>1979</a>
+      <a href="#z4" hidden>2007</a>
+      <a href="#z5" hidden>2010–20</a>
+      <a href="#z6" hidden>2026</a>
     </nav>
 
     <div class="spine" id="spine" aria-hidden="true"></div>
@@ -54,7 +54,7 @@
           <div>
             <div class="ap">сейчас · приложение для спокойствия</div>
             <div class="tx">
-              Ты ещё не медитировал сегодня. Серия из 46 дней под угрозой.
+              Медитация сегодня ещё не начата. Серия из 46 дней под угрозой.
             </div>
           </div>
         </div>
@@ -73,7 +73,7 @@
       <div class="shell">
         <h2>
           Ты пришёл за тишиной. Сервис просит
-          <span class="em">проверить телефон.</span>
+          <span class="em">вернуться к экрану.</span>
         </h2>
         <div class="q">
           Этот экран — авторская модель сервиса, а не цитата из приложения.
@@ -87,6 +87,14 @@
         <div class="f" id="lensPrompt">
           Переключи оптику — и посмотри на знакомое иначе.
         </div>
+        <div class="lens-explanation">
+          <p id="lensExplanation">Обещание — как сервис приглашает к практике.
+            Устройство — какие механизмы стоят за приглашением.</p>
+          <div class="toggle" role="group" aria-label="Оптика чтения" aria-describedby="lensExplanation">
+            <button type="button" data-lens-choice="promise" aria-pressed="true">Обещание</button>
+            <button type="button" data-lens-choice="architecture" aria-pressed="false">Устройство</button>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -94,6 +102,7 @@
     <section class="study">
       <div class="shell">
         <div class="lead reveal">
+          <p class="lede" id="analysisStart">Теперь посмотрим, как устроено это обещание.</p>
           <span class="chip">разбор · модель</span>
           <p style="margin-top: 1rem">
             В собирательной модели ниже разберём три вещи: что измеряет
@@ -153,23 +162,26 @@
             <div class="zhead">
               <span class="era">1950-е</span>
             </div>
-            <h2 class="zh">Покой без церкви</h2>
+            <h2 class="zh">Дзен в иной среде</h2>
             <p class="lede">
-              Часть послевоенного Запада ищет опору не в церкви. Покой всё чаще
-              описывают как личную задачу.
+              В 1950-е дзен привлекает внимание американских писателей
+              и художников. Лекции и книги знакомят с ним новую аудиторию.
             </p>
             <p class="body-note">
-              Судзуки читает лекции о дзен в <span class="keep">Нью-Йорке;</span> Алан Уоттс знакомит с ним
-              западного читателя в «The Way of Zen» (1957); к нему обращаются
-              битники. Это одна из линий распространения практики, а не прямая
-              дорога от кризиса веры к приложению.
+              В 1952–1953 годах Судзуки читает лекции в Колумбийском университете
+              в <span class="keep">Нью-Йорке.</span> В <span class="keep">1957-м</span> выходит «The Way of Zen» Алана Уоттса.
+              К дзен обращаются и битники. Это одна из линий его распространения в США.
+            </p>
+            <p class="source">
+              Источники: <a href="https://cup.columbia.edu/book/spreading-indras-net/9780231550000/">лекции Судзуки, 1952–1953</a>;
+              <a href="https://alanwatts.org/biography">фонд Уоттса: книга 1957 года</a>;
+              <a href="https://www.magazine.columbia.edu/article/east-asian-studies-columbia-early-years">воспоминания о Судзуки и битниках</a>.
             </p>
             <div class="arch">
-              <div class="h"><span class="hint">↗ сменить оптику</span></div>
               <div class="i">
-                В этой истории меняется адресат: к практике обращается отдельный
-                человек, ищущий опору. Сам по себе этот сдвиг ещё не объясняет,
-                как практика станет коммерческим сервисом.
+                Здесь меняется среда: дзен обсуждают в университетской аудитории,
+                книгах и художественных кругах. Само по себе расширение аудитории
+                ещё не объясняет, как практика станет коммерческим сервисом.
               </div>
             </div>
           </div>
@@ -190,7 +202,7 @@
                   alt="Поколение битников, 1950-е"
                 />
               </div>
-              <figcaption class="cap">Поколение битников, ч/б</figcaption>
+              <figcaption class="cap">Поколение битников, <span class="keep">ч/б</span></figcaption>
             </figure>
           </div>
         </div>
@@ -206,22 +218,31 @@
             <div class="zhead">
               <span class="era">1960–70-е</span>
             </div>
-            <h2 class="zh">Измени сознание</h2>
+            <h2 class="zh">Взгляни на мир иначе</h2>
             <p class="lede">
-              Махариши и трансцендентальная медитация; Битлз едут в Ришикеш.
+              Махариши и трансцендентальная медитация; в 1968 году Битлз едут в Ришикеш.
               Практика входит в <span class="keep">поп-культуру</span> Запада.
             </p>
             <p class="body-note">
-              Восток становится модой: мантра, ашрам, гуру попадают на обложки.
+              Поездка известной группы делает практику заметнее: рядом
+              с музыкой обсуждают мантру, ашрам и гуру.
+            </p>
+            <p class="source">
+              <a href="https://www.beatlesstory.com/blog/interview-paul-saltzman-a-moment-in-time/">Пол Зальцман о Ришикеше, февраль 1968</a>;
+              интервью музея The Beatles Story, 29 июня 2017.
             </p>
             <div class="arch">
-              <div class="h"><span class="hint">↗ сменить оптику</span></div>
               <div class="i">
-                Обучение TM платное и включает персональную мантру. Для этой
-                истории важна форма доступа: вход в практику связан с оплатой
-                обучения. Это ещё не подписка; условия в разные годы требуют
-                отдельного сравнения.
+                Сегодня официальный курс TM в США платный; учитель подбирает
+                персональную мантру. Здесь важна форма доступа: вход в практику
+                связан с оплатой обучения. Это не условия 1960-х годов —
+                для такого сравнения нужны исторические документы.
               </div>
+              <p class="source">
+                TM, США: <a href="https://www.tm.org/course-fee">стоимость курса</a>;
+                <a href="https://www.tm.org/en-us/faq">о персональной мантре</a>.
+                Проверено 22 октября 2026.
+              </p>
             </div>
           </div>
           <div class="media" style="grid-column: 1 / 7; order: 1">
@@ -256,16 +277,18 @@
             </div>
             <h2 class="zh">Практика в клинике</h2>
             <p class="lede">
-              Джон <span class="keep">Кабат-Зинн</span> создаёт MBSR в UMass: восьминедельную программу
-              снижения стресса. Практика входит в клинику.
+              В 1979 году Джон <span class="keep">Кабат-Зинн</span> создаёт MBSR в UMass — программу
+              снижения стресса. Сегодня курс длится восемь недель.
             </p>
             <p class="body-note">
               Практику описывают как программу с расписанием и упражнениями.
               Её результаты можно оценивать по клиническим показателям —
               например, по изменению уровня стресса.
             </p>
+            <p class="source">
+              <a href="https://www.ummhealth.org/services-treatments/center-mindfulness/mindfulness-programs/mbsr">UMass Memorial Health: основание MBSR в 1979 году и современная программа</a>.
+            </p>
             <div class="arch">
-              <div class="h"><span class="hint">↗ сменить оптику</span></div>
               <div class="i">
                 Протокол позволяет повторять программу и обучать ведущих.
                 Позже этот формат можно использовать и в коммерческих курсах.
@@ -279,34 +302,36 @@
               <div class="ph" style="--ar: 4 / 5">
                 <img
                   src="images/03-mbsr.jpg"
-                  alt="Группа программы MBSR, клиника UMass, около 1979"
+                  alt="Групповое занятие медитацией"
                 />
               </div>
-              <figcaption class="cap">MBSR, UMass</figcaption>
+              <figcaption class="cap">Иллюстрация групповой практики; связь с MBSR, место и дата снимка не установлены</figcaption>
             </figure>
             <figure class="frame protocol">
               <div class="ph proto">
                 <div class="pr-head">
                   <span class="pr-title">MBSR</span><span>8 недель</span>
                 </div>
-                <table class="pr-table" aria-label="Схема MBSR на восемь недель">
-                  <colgroup><col class="pr-week" /><col /><col class="pr-duration" /></colgroup>
+                <table class="pr-table" aria-label="Темы восьми недель MBSR по современному описанию UMass">
+                  <colgroup><col class="pr-week" /><col /></colgroup>
                   <thead>
-                    <tr><th scope="col">Неделя</th><th scope="col">Практика</th><th scope="col">Мин/день</th></tr>
+                    <tr><th scope="col" aria-label="Неделя">Нед.</th><th scope="col">Содержание</th></tr>
                   </thead>
                   <tbody>
-                    <tr><th scope="row">01</th><td>дыхание · автопилот</td><td>10</td></tr>
-                    <tr><th scope="row">02</th><td>сканирование тела</td><td>20</td></tr>
-                    <tr><th scope="row">03</th><td>осознанное движение</td><td>25</td></tr>
-                    <tr><th scope="row">04</th><td>стресс и реакция</td><td>25</td></tr>
-                    <tr><th scope="row">05</th><td>реакция и ответ</td><td>30</td></tr>
-                    <tr><th scope="row">06</th><td>осознанность в общении</td><td>30</td></tr>
-                    <tr><th scope="row">07</th><td>практика без гида</td><td>40</td></tr>
-                    <tr><th scope="row">08</th><td>интеграция · тишина</td><td>45</td></tr>
+                    <tr><th scope="row">01</th><td>внимательное питание · сканирование тела</td></tr>
+                    <tr><th scope="row">02</th><td>восприятие · реакция на стресс</td></tr>
+                    <tr><th scope="row">03</th><td>движение · сидячая медитация · ходьба</td></tr>
+                    <tr><th scope="row">04</th><td>внимание · телесная реакция на стресс</td></tr>
+                    <tr><th scope="row">05</th><td>привычные реакции · осознанный ответ</td></tr>
+                    <tr><th scope="row">06</th><td>устойчивость и общение</td></tr>
+                    <tr><th scope="row">07</th><td>практика в обычной жизни</td></tr>
+                    <tr><th scope="row">08</th><td>поддержание практики после курса</td></tr>
                   </tbody>
                 </table>
               </div>
-              <figcaption class="cap">Схема публикации; не документальный протокол. Содержание и минуты требуют сверки.</figcaption>
+              <figcaption class="cap">Схема публикации по <a href="https://www.ummhealth.org/services-treatments/center-mindfulness/mindfulness-programs/mbsr">современному описанию UMass Memorial Health</a>;
+                не архивный протокол 1979 года. Домашняя практика — примерно
+                45–60 минут в день. Источник проверен 22 октября 2026.</figcaption>
             </figure>
           </div>
         </div>
@@ -322,11 +347,14 @@
             <div class="zhead">
               <span class="era">2007</span>
             </div>
-            <h2 class="zh">Два адресата обещания</h2>
+            <h2 class="zh">Обещание для бизнеса</h2>
             <p class="lede">
               Google запускает «Search Inside Yourself». У практики появляется
               корпоративный адресат. Как меняется обещание, когда за программу
               платит работодатель?
+            </p>
+            <p class="source">
+              <a href="https://www.siyglobal.com/emotional-intelligence-programs/search-inside-yourself">SIY Global: программа создана для сотрудников Google в 2007 году</a>.
             </p>
             <div class="split reveal">
               <div class="a">
@@ -344,7 +372,6 @@
               </div>
             </div>
             <div class="arch">
-              <div class="h"><span class="hint">↗ сменить оптику</span></div>
               <div class="i">
                 Здесь возникает вопрос о рекуперации: может ли практика,
                 позволяющая переосмыслить свой образ жизни, стать способом
@@ -386,8 +413,13 @@
             </div>
             <h2 class="zh">Счастье за <span class="keep">10 минут</span> в день</h2>
             <p class="lede">
-              Headspace (2010) и Calm (2012). Обложка Time «The Mindful
-              Revolution» (2014). Пандемия 2020 — загрузки взлетают.
+              Headspace (2010) и Calm (2012) переносят практику в телефон.
+              В 2014 году Time выносит «The Mindful Revolution» на обложку.
+            </p>
+            <p class="source">
+              Даты основания: <a href="https://organizations.headspace.com/ginger-is-now-part-of-headspace">Headspace</a>,
+              <a href="https://www.actorawards.org/sites/default/files/calm-fact-sheet_0.pdf">факт-лист Calm (PDF)</a>.
+              <a href="https://content.time.com/time/covers/0%2C16641%2C20140203%2C00.html">Обложка Time, 3 февраля 2014</a>.
             </p>
             <div class="mech reveal">
               <div class="r">
@@ -431,12 +463,17 @@
               число сессий? Набор механик различается у разных сервисов.
             </p>
             <div class="arch">
-              <div class="h"><span class="hint">↗ сменить оптику</span></div>
               <div class="i">
-                В 2019 году Calm оценивают примерно в $1 млрд; выходит
-                «McMindfulness» Пёрсера. «Витамин, а не аспирин» — ежедневность
-                как <span class="keep">бизнес-модель.</span>
+                В феврале 2019 года Calm оценивают в $1 млрд в инвестиционном раунде.
+                В том же году инвестор Calm Lightspeed связывает истории для сна
+                с возвращением пользователей каждую ночь и оплатой подписки.
+                Это взгляд инвестора конкретного сервиса: регулярное возвращение
+                становится частью его <span class="keep">бизнес-модели.</span>
               </div>
+              <p class="source">
+                <a href="https://www.tpg.com/news-and-insights/calm-raises-88m-becomes-first-mental-health-unicorn">TPG, раунд Calm, 6 февраля 2019</a>;
+                <a href="https://lsvp.com/stories/calm-is-creating-quite-a-storm/">Lightspeed о сне и подписке, 2019</a>.
+              </p>
               <div class="cite">
                 Авторское прочтение Хана, «Инфократия»: режим правит через свободу и прозрачность — ты сам отдаёшь данные о своём покое и сам себя
                 оптимизируешь.
@@ -452,7 +489,7 @@
                   alt="Экран приложения для медитации: стрик и подписка"
                 />
               </div>
-              <figcaption class="cap">Интерфейс подписки, ч/б</figcaption>
+              <figcaption class="cap">Интерфейс подписки, <span class="keep">ч/б</span></figcaption>
             </figure>
             <figure class="frame">
               <div class="ph" style="--ar: 3 / 4">
@@ -461,7 +498,7 @@
                   alt="Обложка журнала Time «The Mindful Revolution», 2014"
                 />
               </div>
-              <figcaption class="cap">«The Mindful Revolution»</figcaption>
+              <figcaption class="cap">Time, 3 февраля 2014 · фото Peter Hapak</figcaption>
             </figure>
           </div>
         </div>
@@ -477,15 +514,19 @@
             <div class="zhead">
               <span class="era">2026</span>
             </div>
-            <h2 class="zh">Твой путь продолжается</h2>
+            <h2 class="zh">Продолжай свой путь</h2>
             <p class="lede">
-              Что меняется, когда покой оценивают через удержание пользователя?
+              Что меняется, когда мерой покоя становится возврат в приложение?
             </p>
-            <div class="bignum"><span class="keep">$2 млрд</span></div>
+            <div class="bignum"><span class="keep">105 млн</span></div>
             <div class="bigsub">
-              Оценка рынка; у Headspace ≈ 2,8 млн платных подписчиков
-              и ≈ 105 млн загрузок. Источник и даты этих цифр требуют уточнения.
+              Более 105 млн загрузок приложения — по данным Headspace.
+              Загрузки не равны числу платных подписчиков или регулярно практикующих людей.
             </div>
+            <p class="source">
+              <a href="https://www.headspace.com/about-us">Headspace, «О нас»</a>.
+              Проверено 22 октября 2026; период подсчёта компанией не указан.
+            </p>
             <div class="trap-trigger">
               <span class="chip">модель · подписка активна</span
               ><button class="trap-btn" id="trapOpen">
@@ -493,7 +534,6 @@
               </button>
             </div>
             <div class="arch">
-              <div class="h"><span class="hint">↗ сменить оптику</span></div>
               <div class="i">
                 Попробуй отменить подписку в этой авторской модели. Каждый шаг
                 предлагает причину остаться: сохранить серию, получить скидку,
@@ -508,10 +548,16 @@
             <div class="exit reveal">
               <div class="lab">выход · различение</div>
               <p style="margin-top: 0.9rem" class="body-note">
-                Есть и другие модели доступа: Waking Up предлагает помощь тем,
-                кто не может платить; Plum Village — бесплатный доступ.
+                Есть и другие модели доступа: Waking Up позволяет запросить
+                бесплатный доступ тем, кто не может оплатить подписку;
+                приложение Plum Village бесплатно и поддерживается добровольными пожертвованиями.
                 Их условия нужно рассматривать отдельно: бесплатность ещё
                 не объясняет, как сервис обращается с вниманием пользователя.
+              </p>
+              <p class="source">
+                Условия: <a href="https://www.wakingup.com/scholarship">Waking Up, стипендии</a>;
+                <a href="https://plumvillage.app/our-values-principles-objects-and-commitments/">принципы Plum Village</a>.
+                Проверено 22 октября 2026.
               </p>
               <p class="body-note" style="margin-top: 1rem">
                 Чтобы различить поддержку и удержание, стоит посмотреть, можно
