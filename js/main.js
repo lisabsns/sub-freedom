@@ -3,7 +3,7 @@
 (function () {
   document.documentElement.classList.add("js");
 
-  /* ---- 1. Предлог остаётся со следующим словом при любой ширине ----
+  /* ---- 1. Предлоги и окончания предложений не остаются в одиночестве ----
      Собираем строку через вложенные inline-элементы, но не через блоки и br.
      Меняем только пробелы в исходных текстовых узлах: разметка, обработчики
      кнопок и документальные формулировки сохраняются. */
@@ -46,6 +46,11 @@
   var prepositions = /(?<![\p{L}\p{N}_\-])(?:безо?|благодаря|близ|в|во|вблизи|вдоль|взамен|вместо|вне|внутри|вокруг|возле|вопреки|вроде|вслед|вследствие|для|до|за|из[-\u2011]за|из[-\u2011]под|изо?|к|ко|кроме|меж|между|на|навстречу|наподобие|насч[её]т|о|об|обо|около|от|ото|перед|передо|по|поверх|под|подо|позади|после|посреди|посредством|при|про|против|ради|с|со|сверх|сквозь|согласно|среди|у|через|чрез|а|и|но|да|или|либо|не|ни|in|on|at|to|for|of|from|by|with|without|a|an|the)(\s+)(?=\S)/giu;
   var compoundPrepositions = /(?<![\p{L}\p{N}_\-])(?:в\s+течение|в\s+продолжение|в\s+связи\s+с|в\s+отличие\s+от|в\s+зависимости\s+от|в\s+соответствии\s+с|в\s+целях|в\s+силу|за\s+сч[её]т|по\s+сравнению\s+с|по\s+отношению\s+к|по\s+мере|несмотря\s+на|невзирая\s+на|вместе\s+с|вслед\s+за|вплоть\s+до)\s+(?=\S)/giu;
 
+  var sentenceSegmenter = typeof Intl.Segmenter === "function" ?
+    new Intl.Segmenter("ru", {granularity: "sentence"}) : null;
+  var shortWord = /^(?:[а-яё]{1,3}|тебе|тебя|меня|себе|себя|если|даже|лишь|пока|кому|куда|чему|этот|этой|этим|этом|того|тому|теми|свой|своя|своё|свои|весь|всех|всем|всей|всём|чтобы|когда|будто|словно|хотя|также|тоже|зато|есть|можно|нужно|надо|может)$/i;
+  var afterWordParticle = /^(?:б|бы|ж|же|ли|ль)$/i;
+
   textRuns.forEach(function (nodes) {
     var text = nodes.map(function (node) { return node.nodeValue; }).join("");
     var chars = text.split("");
@@ -64,6 +69,35 @@
     Array.from(text.matchAll(/\s+—/g)).forEach(function (match) {
       bindSpace(match.index, match[0].length - 1);
     });
+    // Первый экран сохраняет согласованный авторский набор с явным br.
+    // В остальных фразах защищаем короткие слова и последние два слова
+    // предложения, включая подписи, заголовки, интерфейс и таблицу.
+    if (!nodes.some(function (node) { return node.parentElement.closest(".hpromise h1"); })) {
+      // HTML-переносы в исходнике отображаются пробелами, а не границами фраз.
+      // Замена один к одному сохраняет индексы исходных текстовых узлов.
+      var normalized = text.replace(/\s/g, " ");
+      var sentences = sentenceSegmenter ? Array.from(sentenceSegmenter.segment(normalized)) :
+        [{index: 0, segment: normalized}];
+      sentences.forEach(function (sentence) {
+        var words = Array.from(sentence.segment.matchAll(/[\p{L}\p{N}]+(?:[-/'’][\p{L}\p{N}]+)*/gu));
+        if (words.length < 2) return;
+        function keepPair(previous, next) {
+          var start = previous.index + previous[0].length;
+          var between = sentence.segment.slice(start, next.index);
+          Array.from(between.matchAll(/\s+/g)).forEach(function (space) {
+            bindSpace(sentence.index + start + space.index, space[0].length);
+          });
+        }
+        words.forEach(function (word, i) {
+          if (i + 1 < words.length && shortWord.test(word[0])) {
+            keepPair(word, words[i + 1]);
+          }
+          // Частица сохраняет связь и с тем словом, к которому относится.
+          if (i > 0 && afterWordParticle.test(word[0])) keepPair(words[i - 1], word);
+        });
+        keepPair(words[words.length - 2], words[words.length - 1]);
+      });
+    }
     var offset = 0;
     nodes.forEach(function (node) {
       var length = node.nodeValue.length;
@@ -81,13 +115,146 @@
   var pars = [].slice.call(document.querySelectorAll(".par"));
   var index = document.getElementById("idx");
   var links = [].slice.call(index.querySelectorAll("a"));
-  var navigationUnlocked = false;
-  var lensBar = document.getElementById("lensBar"),
-    lensPrompt = document.getElementById("lensPrompt");
+  var sections = links.map(function (link) {
+    return document.querySelector(link.getAttribute("href"));
+  });
+  var visited = new Set(["z0"]);
+  var returnTarget = null;
+  var returnTimer = null;
+  var activeSection = "z0";
+  var manualLens = false;
+  var automaticLensApplied = false;
+  var analysisStart = document.getElementById("analysisStart");
+  var turn = document.querySelector(".turn");
+  var lensChoices = [].slice.call(document.querySelectorAll("[data-lens-choice]"));
   var lastN = -1,
     ticking = false;
   function docH() {
     return document.documentElement.scrollHeight - window.innerHeight;
+  }
+
+  /* Сохраняем видимый абзац/иллюстрацию, а не абсолютный процент страницы.
+     Вступительная sticky-сцена имеет неизменную высоту и не требует поправки. */
+  function readingAnchor() {
+    if (cap.getBoundingClientRect().bottom > innerHeight) return null;
+    var candidates = [].slice.call(document.querySelectorAll(
+      ".txt > .zh, .txt > .lede, .txt > .body-note, .frame, .study .lead, " +
+      ".svc, .marks .m, .turn h2, .turn .q, #lensPrompt, .exit p"
+    ));
+    var visible = candidates.filter(function (element) {
+      var rect = element.getBoundingClientRect();
+      return rect.bottom > 105 && rect.top < innerHeight && rect.height > 0;
+    });
+    visible.sort(function (a, b) {
+      return Math.abs(a.getBoundingClientRect().top - innerHeight * 0.3) -
+        Math.abs(b.getBoundingClientRect().top - innerHeight * 0.3);
+    });
+    if (visible[0]) return {element: visible[0], top: visible[0].getBoundingClientRect().top};
+    // Если читатель находится внутри закрываемого комментария, возвращаем
+    // заголовок именно этого раздела, а не перескакиваем в соседнюю эпоху.
+    var section = sections.find(function (element) {
+      var rect = element.getBoundingClientRect();
+      return rect.top < innerHeight * 0.5 && rect.bottom > innerHeight * 0.5;
+    });
+    var heading = section && section.querySelector(".zh");
+    return heading ? {element: heading, top: 110} : null;
+  }
+  function chooseLens(next, manual) {
+    if (manual) manualLens = true;
+    var root = document.documentElement;
+    if (root.dataset.lens === next) return;
+    var anchor = readingAnchor();
+    root.style.overflowAnchor = "none";
+    root.dataset.lens = next;
+    lensChoices.forEach(function (button) {
+      button.setAttribute("aria-pressed", String(button.dataset.lensChoice === next));
+    });
+    if (anchor) {
+      var previousScroll = scrollY;
+      var delta = anchor.element.getBoundingClientRect().top - anchor.top;
+      if (Math.abs(delta) > 0.5) scrollTo({top: previousScroll + delta, behavior: "instant"});
+      // Колесо продолжает движение от сохранённого участка после перерасчёта.
+      dispatchEvent(new CustomEvent("longread:layoutshift", {
+        detail: {delta: scrollY - previousScroll}
+      }));
+    }
+    requestAnimationFrame(function () {
+      root.style.removeProperty("overflow-anchor");
+      onScroll();
+    });
+  }
+  lensChoices.forEach(function (button) {
+    button.addEventListener("click", function () {
+      chooseLens(button.dataset.lensChoice, true);
+    });
+    button.addEventListener("keydown", function (event) {
+      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+      event.preventDefault();
+      var buttons = [].slice.call(button.parentElement.querySelectorAll("button"));
+      var next = event.key === "Home" ? buttons[0] : event.key === "End" ? buttons[1] :
+        buttons[(buttons.indexOf(button) + 1) % buttons.length];
+      next.focus();
+      next.click();
+    });
+  });
+
+  function finishReturn() {
+    returnTarget = null;
+    clearTimeout(returnTimer);
+  }
+  links.forEach(function (link) {
+    link.addEventListener("click", function () {
+      returnTarget = document.querySelector(link.getAttribute("href"));
+      clearTimeout(returnTimer);
+      // Даже при прерывании нативной прокрутки блокировка не остаётся навсегда.
+      returnTimer = setTimeout(finishReturn, 2500);
+    });
+  });
+  addEventListener("wheel", finishReturn, {passive: true});
+  addEventListener("touchstart", finishReturn, {passive: true});
+  addEventListener("keydown", function (event) {
+    if (["PageDown", "PageUp", "ArrowDown", "ArrowUp", "Escape"].includes(event.key)) finishReturn();
+  });
+
+  function updateTrail(vh) {
+    var current = "z0";
+    sections.forEach(function (section, i) {
+      var rect = section.getBoundingClientRect();
+      // Достаточно увидеть начало или оказаться внутри содержимого раздела.
+      // Его пустые внешние отступы и пропущенные при прыжке эпохи не считаются
+      // посещением; возврат по якорю не открывает промежуточные разделы.
+      var heading = section.querySelector(".zhead") || section;
+      var head = heading.getBoundingClientRect();
+      var content = section.querySelector(".ed") || section;
+      if (!returnTarget && head.top <= vh * 0.65 &&
+          content.getBoundingClientRect().bottom >= 95) {
+        visited.add(section.id);
+      }
+      if (rect.top <= vh * 0.45 && visited.has(section.id)) current = section.id;
+      links[i].hidden = !visited.has(section.id);
+    });
+    links.forEach(function (link) {
+      var active = link.getAttribute("href") === "#" + current;
+      link.classList.toggle("on", active);
+      if (active) link.setAttribute("aria-current", "location");
+      else link.removeAttribute("aria-current");
+    });
+    if (activeSection !== current) {
+      activeSection = current;
+      var activeLink = index.querySelector('[aria-current="location"]');
+      if (activeLink && index.scrollWidth > index.clientWidth) {
+        var left = activeLink.offsetLeft;
+        var right = left + activeLink.offsetWidth;
+        if (left < index.scrollLeft) index.scrollLeft = left;
+        else if (right > index.scrollLeft + index.clientWidth) {
+          index.scrollLeft = right - index.clientWidth;
+        }
+      }
+    }
+    if (returnTarget) {
+      clearTimeout(returnTimer);
+      returnTimer = setTimeout(finishReturn, 180);
+    }
   }
 
   /* ---- 2. Скролл: hero-захват, спайн, прогресс, параллакс ---- */
@@ -95,10 +262,12 @@
     ticking = false;
     var vh = window.innerHeight;
 
-    // Показываем оптику, когда читатель доходит до подсказки.
-    // После этого кнопка остаётся доступной и при прокрутке обратно вверх.
-    if (lensBar.hidden && lensPrompt.getBoundingClientRect().top < vh) {
-      lensBar.hidden = false;
+    // Первый проход: сначала весь вступительный эпизод, затем разбор.
+    // Любой ручной выбор, в том числе уже активного «Обещания», имеет приоритет.
+    if (!manualLens && !automaticLensApplied &&
+        analysisStart.getBoundingClientRect().top <= vh * 0.65) {
+      automaticLensApplied = true;
+      chooseLens("architecture", false);
     }
 
     // прогресс «захвата» в hero (0..1)
@@ -106,6 +275,13 @@
       total = cap.offsetHeight - vh;
     var p = Math.min(1, Math.max(0, -r.top / total));
     cap.querySelector(".stage").style.setProperty("--p", p.toFixed(4));
+    // Шапка читается и на тёмной вступительной сцене в светлой оптике.
+    var turnRect = turn.getBoundingClientRect();
+    document.documentElement.classList.toggle("reading-dark",
+      (r.bottom > 95 && p > 0.62) || (turnRect.top <= 95 && turnRect.bottom > 95));
+    var navLine = innerWidth >= 1440 ? vh * 0.5 : 95;
+    index.classList.toggle("is-dark", (r.bottom > navLine && p > 0.62) ||
+      (turnRect.top <= navLine && turnRect.bottom > navLine));
 
     // счётчик дней в hero набегает от скролла
     var cp = Math.min(1, Math.max(0, (p - 0.34) / (0.85 - 0.34)));
@@ -119,16 +295,7 @@
     var g = Math.min(1, Math.max(0, window.scrollY / docH()));
     if (spine) spine.style.setProperty("--prog", (g * 100).toFixed(1) + "%");
 
-    // Переходы доступны после достижения конца и остаются доступны до перезагрузки.
-    if (!navigationUnlocked && docH() > 0 && window.scrollY >= docH() - 2) {
-      navigationUnlocked = true;
-      links.forEach(function (link) {
-        link.setAttribute("href", link.getAttribute("data-href"));
-        link.removeAttribute("aria-disabled");
-      });
-      index.removeAttribute("inert");
-      index.classList.add("is-unlocked");
-    }
+    updateTrail(vh);
 
     // параллакс декоративных годов
     if (!reduce) {
@@ -151,22 +318,6 @@
   addEventListener("resize", onScroll, { passive: true });
   addEventListener("load", onScroll);
   frame();
-
-  /* ---- 3. Тумблер оптики (обещание ⇄ устройство = инверсия) ---- */
-  document.getElementById("lensBtn").addEventListener("click", function () {
-    var c = document.documentElement.getAttribute("data-lens"),
-      next = c === "promise" ? "architecture" : "promise";
-    document.documentElement.setAttribute("data-lens", next);
-    var on = document.querySelector(".pr-on"),
-      off = document.querySelector(".ar-on");
-    if (next === "architecture") {
-      on.classList.replace("on", "off");
-      off.classList.replace("off", "on");
-    } else {
-      on.classList.replace("off", "on");
-      off.classList.replace("on", "off");
-    }
-  });
 
   /* ---- 4. Цепочка-стрик в карточке-модели (45 дней + 1 разрыв) ---- */
   var chain = document.getElementById("svcchain");
@@ -219,27 +370,6 @@
     io.observe(el);
   });
 
-  /* ---- 7. Подсветка активной эпохи в индексе ---- */
-  var ids = links.map(function (a) {
-    return document.querySelector(a.getAttribute("data-href"));
-  });
-  var io2 = new IntersectionObserver(
-    function (es) {
-      es.forEach(function (e) {
-        if (e.isIntersecting) {
-          var i = ids.indexOf(e.target);
-          links.forEach(function (l) {
-            l.classList.remove("on");
-          });
-          if (links[i]) links[i].classList.add("on");
-        }
-      });
-    },
-    { rootMargin: "-45% 0px -45% 0px" },
-  );
-  ids.forEach(function (s) {
-    if (s) io2.observe(s);
-  });
 })();
 
 /* Фотографии: одинаково при первой загрузке, из кеша и после возврата назад.
@@ -484,6 +614,12 @@
     }
     return false;
   }
+  addEventListener("longread:layoutshift", function (event) {
+    if (pending !== null) {
+      position += event.detail.delta;
+      target = limit(target + event.detail.delta);
+    }
+  });
   addEventListener("wheel", function (event) {
     var element = event.target instanceof Element ? event.target : null;
     if (event.defaultPrevented || !event.cancelable || reduce.matches || !mouse.matches ||
