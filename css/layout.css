@@ -211,7 +211,7 @@ em,
 .label, .chip, .ulbl, .zhead .era, .bar, .toggle, .index a,
 .cap, .hstreak .l, .hpush .ap, .hpay .b, .hpay .pr, .cue, .turn .f,
 .svc .greet, .svc .sday, .svc .cont, .svc .left, .marks .k, .split .w,
-.mech .nm, .exit .lab, .marks::before, .frame .ph::before,
+.mech .nm, .exit .lab, .marks::before,
 .frame .ph.proto, .trap-btn, .trap-x, .trap-k, .trap-primary, .trap-leave, .real-exit {
   font-family: var(--font);
   font-size: var(--t-label);
@@ -478,7 +478,7 @@ html.reading-dark {
   letter-spacing: -0.04em;
 }
 /* ======================= СЛОТЫ ПОД ФОТО ======================= */
-/* серый квадрат с подписью. Чтобы вставить фото — положи <img> внутрь .ph */
+/* Чтобы вставить фото — положи <img> внутрь .ph. */
 .frame {
   position: relative;
   overflow: hidden;
@@ -494,16 +494,6 @@ html.reading-dark {
   text-align: center;
   padding: 1.3rem;
   background: var(--slot);
-}
-.frame .ph::before {
-  content: "ФОТО";
-  position: absolute;
-  top: 0.6rem;
-  left: 0.7rem;
-  font-family: var(--font);
-  letter-spacing: 0.04em;
-  color: var(--slot-fg);
-  opacity: 0.75;
 }
 .frame .ph span {
   font-family: var(--font);
@@ -1030,9 +1020,6 @@ section.zone {
   background: transparent;
   padding: 0;
   text-align: left;
-}
-.frame .ph.proto::before {
-  content: none;
 }
 .proto .pr-head {
   gap: 1rem;
