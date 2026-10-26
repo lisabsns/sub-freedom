@@ -25,6 +25,7 @@
         if (node.nodeType !== Node.ELEMENT_NODE) return;
         if (node.namespaceURI !== "http://www.w3.org/1999/xhtml" ||
             /^(SCRIPT|STYLE|NOSCRIPT|TEXTAREA)$/.test(node.tagName) ||
+            node.classList.contains("course-webring") ||
             node.isContentEditable) return;
         if (node.tagName === "BR") {
           flush();
